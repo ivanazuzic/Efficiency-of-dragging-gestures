@@ -8,10 +8,15 @@ from matplotlib.figure import Figure
 
 import numpy as np
 
+from curve_functions import FunctionProvider
+
 class ExperimentWindow(tk.Frame):
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, difficulty, order, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
+
         self.parent = parent
+        self.difficulty = difficulty
+        self.order = order
 
         self.SAMPLE_TIMEOUT = 10  # how much milliseconds pass between sampling
 
@@ -24,7 +29,7 @@ class ExperimentWindow(tk.Frame):
         self.window = tk.Toplevel()
         self.window.title("Task window")
 
-        self.fig = Figure(figsize=(5, 4), dpi=100)
+        self.fig = Figure(figsize=(9, 7), dpi=100)
 
         # the following line always produces 100 equally spread points on the x_range
         self.t = np.arange(
@@ -33,8 +38,10 @@ class ExperimentWindow(tk.Frame):
             np.abs(self.x_range["end"] - self.x_range["start"]) / 100.00
         )
 
+        self.fp = FunctionProvider()
+
         self.y = np.zeros(len(self.t))
-        self.y = self.function_curve()
+        self.y = self.fp.provide_function(difficulty, order[0], self.t)
 
         self.graph = self.fig.add_subplot(111)  # this is the subplot on which we draw
         self.graph.set_xlim([-40, 90]) # limiting the x axis range
@@ -111,29 +118,6 @@ class ExperimentWindow(tk.Frame):
             pass
 
         self.window.after(self.SAMPLE_TIMEOUT, self.task)
-
-    def function_curve(self):
-        # this is the function we're plotting.
-        # it returns its value y=f(x) based on the value of the
-        # given x.
-
-        # this example function has two parts,
-        # equally divided across x_range.
-
-        y = np.zeros(len(self.t))
-
-        for x in range(len(self.y)):
-            # calculate y for each generated t
-
-            diff = np.abs(self.x_range["end"] - self.x_range["start"])
-            divide_point = (diff / 2.0) + self.x_range["start"]
-
-            if(x > divide_point):
-                y[x] = 5 * np.sin(x)
-            else:
-                y[x] = x * x - 15 * x
-
-        return y
 
     def on_mouse_down(self, event):
         print("you clicked")

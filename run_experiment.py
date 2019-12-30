@@ -56,7 +56,7 @@ class MainWindow(tk.Frame):
         difficulty_entry.grid(row=3, column=1)
 
         # Choosing the order of tasks
-        ORDER = ["(1, 2, 3)", "(1, 3, 2)", "(2, 3, 1)", "(2, 1, 3)", "(3, 1, 2)", "(3, 2, 1)"]
+        ORDER = ["1 2 3", "1 3 2", "2 3 1", "2 1 3", "3 1 2", "3 2 1"]
         order_label = tk.Label(text='Order of tasks:')
         order_label.grid(row=4, column=0)  
         order = tk.StringVar(root)
@@ -98,7 +98,8 @@ class MainWindow(tk.Frame):
         # TODO: Uncomment this for the final experiment
         # epoch_time = int(time.time())
         # self.write_participants_data([name, age, device, difficulty, order, epoch_time])
-        ExperimentWindow(self.parent) 
+        level = {"Easy" : 1, "Medium" : 2, "Hard" : 3}
+        ExperimentWindow(self.parent, level[difficulty], tuple([int(x) for x in order.replace(' ', '')])) 
 
 if __name__ == "__main__":
     root = tk.Tk()
