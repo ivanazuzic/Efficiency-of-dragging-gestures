@@ -69,6 +69,22 @@ class MainWindow(tk.Frame):
         b.grid(row=5, column=0, columnspan=2)    
         b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), difficulty.get(), order.get(), e))
 
+        # Setting the windows size and initial position
+        width = 350
+        height = 200
+        self.parent.geometry('{}x{}+{}+{}'.format(width, height, 10, 10))
+
+        # Setting the screen state to be toggleable
+        # By default the screen is small 
+        self.screen_state = False
+        self.parent.bind("<Escape>", self.toggle_fullscreen)
+
+    # Toggles to full screen and back
+    def toggle_fullscreen(self, event=None):
+        self.screen_state = not self.screen_state  # Just toggling the boolean
+        self.parent.attributes("-fullscreen", self.screen_state)
+        return "break"
+
     """
     # Writes the data entered in the beginning of the 
     # experment to our Google Sheet

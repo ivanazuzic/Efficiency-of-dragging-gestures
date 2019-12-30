@@ -59,6 +59,25 @@ class ExperimentWindow(tk.Frame):
 
         self.window.after(self.SAMPLE_TIMEOUT, self.task)
 
+        # Setting the windows size and initial position
+        width = 900
+        height = 700
+        self.window.geometry('{}x{}+{}+{}'.format(width, height, 10, 10))
+
+        # Setting the screen state to be toggleable
+        # By default the screen is small 
+        self.screen_state = False
+        self.window.attributes("-fullscreen", self.screen_state)
+        self.window.bind("<Escape>", self.toggle_fullscreen)
+
+
+    # Toggles to full screen and back
+    def toggle_fullscreen(self, event=None):
+        self.screen_state = not self.screen_state  # Just toggling the boolean
+        self.window.attributes("-fullscreen", self.screen_state)
+        print("Toggle")
+        return "break"
+
     
     def _quit(self):
         self.window.quit()     # stops mainloop
