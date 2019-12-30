@@ -37,6 +37,8 @@ class ExperimentWindow(tk.Frame):
         self.y = self.function_curve()
 
         self.graph = self.fig.add_subplot(111)  # this is the subplot on which we draw
+        self.graph.set_xlim([-40, 90]) # limiting the x axis range
+        self.graph.set_ylim([-80, 300]) # limiting the y axis range
         self.graph.plot(self.t, self.y)  # plot the generated t and y
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)  # A tk.DrawingArea.
