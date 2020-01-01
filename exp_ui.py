@@ -5,7 +5,6 @@ from matplotlib.backends.backend_tkagg import (
 # Implement the default Matplotlib key bindings.
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
-from matplotlib.lines import Line2D
 
 import numpy as np
 
@@ -51,6 +50,12 @@ class ExperimentWindow(tk.Frame):
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)  # A tk.DrawingArea.
         self.canvas.draw()
+
+        # store the background of the current canvas
+        # so that we don't have to repeatedly redraw it
+        # when plotting the cursor trajectory ---> increases FPS
+        self.background = self.fig.canvas.copy_from_bbox(self.graph.bbox)
+
         self.canvas.get_tk_widget().grid(row=0, column=0)
 
         self.is_mouse_pressed = False
@@ -102,20 +107,27 @@ class ExperimentWindow(tk.Frame):
             # check if it's near the example function
             # and then do something smart with that information.
 
-            # plot the line that connects the penultimate
-            # and ultimate cursor location
-            self.graph.plot(
-                [self.cursor_coord[0]["x"], self.cursor_coord[1]["x"]],
-                [self.cursor_coord[0]["y"], self.cursor_coord[1]["y"]],
-                # make it wider than the original curve
-                linewidth=2,
-                # give it a subtle color to avoid visual clutter
-                # and make it 80% visible
-                color=(0.7, 0.8, 0.7, 0.8),
-                zorder=0  # plot it behind everything else
-            )
-            self.fig.canvas.draw()  # update the canvas
+            # first, restore the currently saved background
+            self.fig.canvas.restore_region(self.background)
 
+            # plot (only!) the line that connects the penultimate
+            # and ultimate cursor location
+            self.graph.draw_artist(
+                self.graph.plot(
+                    [self.cursor_coord[0]["x"], self.cursor_coord[1]["x"]],
+                    [self.cursor_coord[0]["y"], self.cursor_coord[1]["y"]],
+                    # make it wider than the original curve
+                    linewidth=2,
+                    # give it a subtle color to avoid visual clutter
+                    # and make it 50% visible
+                    color=(0.7, 0.8, 0.7, 0.5),
+                    animated=True
+                )[0]
+            )
+            # update the canvas
+            self.fig.canvas.blit(self.graph.bbox)
+            # store the background again
+            self.background = self.fig.canvas.copy_from_bbox(self.graph.bbox)
         else:
             # do something if mouse is not pressed...
             pass

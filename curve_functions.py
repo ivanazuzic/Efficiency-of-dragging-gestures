@@ -87,8 +87,11 @@ class FunctionProvider:
 
         i = 0
         for x in x_arr:
+            if x <= 0:
+                # has to be greater than zero because of the logarithm domain
+                continue
             # calculate y for each given x
-            y[i] = math.log(x)
+            y[i] = 50 * math.log(x)
             i += 1
 
         return y
@@ -158,7 +161,7 @@ class FunctionProvider:
             if(x > divide_point):
                 y[i] = 5 * math.tan(x)
             else:
-                y[i] = x * x * x -7 * x * x - 15 * x
+                y[i] = x * x * x - 7 * x * x - 15 * x
             i += 1
 
         return y
