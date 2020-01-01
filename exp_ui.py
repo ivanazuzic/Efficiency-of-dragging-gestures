@@ -5,6 +5,7 @@ from matplotlib.backends.backend_tkagg import (
 # Implement the default Matplotlib key bindings.
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
+from matplotlib.lines import Line2D
 
 import numpy as np
 
@@ -53,11 +54,12 @@ class ExperimentWindow(tk.Frame):
         self.canvas.get_tk_widget().grid(row=0, column=0)
 
         self.is_mouse_pressed = False
-        # cursor_coord holds the last (ultimate) logged cursor coordinate,
-        # is (0, 0) by default
-        self.cursor_coord = {"x": 0, "y": 0}
-
-        self.cursor_coord = {"x": 0, "y": 0}
+        # cursor_coord holds the last (ultimate)
+        # and penultimate logged cursor coordinate
+        self.cursor_coord = [
+            {"x": None, "y": None},  # penultimate
+            {"x": None, "y": None},  # ultimate
+        ]
 
         self.canvas.mpl_connect("button_press_event", self.on_mouse_down)
         self.canvas.mpl_connect("button_release_event", self.on_mouse_up)
@@ -74,11 +76,10 @@ class ExperimentWindow(tk.Frame):
         self.window.geometry('{}x{}+{}+{}'.format(width, height, 10, 10))
 
         # Setting the screen state to be toggleable
-        # By default the screen is small 
+        # By default the screen is small
         self.screen_state = False
         self.window.attributes("-fullscreen", self.screen_state)
         self.window.bind("<Escape>", self.toggle_fullscreen)
-
 
     # Toggles to full screen and back
     def toggle_fullscreen(self, event=None):
@@ -87,11 +88,12 @@ class ExperimentWindow(tk.Frame):
         print("Toggle")
         return "break"
 
-    
     def _quit(self):
-        self.window.quit()     # stops mainloop
-        self.window.destroy()  # this is necessary on Windows to prevent
-                        # Fatal Python Error: PyEval_RestoreThread: NULL tstate
+        # stops mainloop
+        # this is necessary on Windows to prevent
+        # Fatal Python Error: PyEval_RestoreThread: NULL tstate
+        self.window.quit()
+        self.window.destroy()
 
     def task(self):
         if self.is_mouse_pressed:
@@ -100,16 +102,17 @@ class ExperimentWindow(tk.Frame):
             # check if it's near the example function
             # and then do something smart with that information.
 
-            # plotting a point on the subplot
-            # at the current cursor coordinates (x, y).
-            self.graph.scatter(
-                self.cursor_coord["x"],
-                self.cursor_coord["y"],
+            # plot the line that connects the penultimate
+            # and ultimate cursor location
+            self.graph.plot(
+                [self.cursor_coord[0]["x"], self.cursor_coord[1]["x"]],
+                [self.cursor_coord[0]["y"], self.cursor_coord[1]["y"]],
                 # make it wider than the original curve
                 linewidth=2,
                 # give it a subtle color to avoid visual clutter
                 # and make it 80% visible
-                color=(0.7, 0.8, 0.7, 0.8)
+                color=(0.7, 0.8, 0.7, 0.8),
+                zorder=0  # plot it behind everything else
             )
             self.fig.canvas.draw()  # update the canvas
 
@@ -117,19 +120,23 @@ class ExperimentWindow(tk.Frame):
             # do something if mouse is not pressed...
             pass
 
+        # every [SAMPLE_TIMEOUT] milliseconds,
+        # update the penultimate cursor location
+        self.cursor_coord[0]["x"] = self.cursor_coord[1]["x"]
+        self.cursor_coord[0]["y"] = self.cursor_coord[1]["y"]
+
+        # repeat this task in [SAMPLE_TIMEOUT] milliseconds...
         self.window.after(self.SAMPLE_TIMEOUT, self.task)
 
     def on_mouse_down(self, event):
         print("you clicked")
         self.is_mouse_pressed = True
 
-
     def on_mouse_up(self, event):
         print("you released")
         self.is_mouse_pressed = False
 
-
     def on_mouse_hover(self, event):
-        # this frequently updates the cursor location
-        self.cursor_coord["x"] = event.xdata
-        self.cursor_coord["y"] = event.ydata
+        # this frequently updates the ultimate cursor location
+        self.cursor_coord[1]["x"] = event.xdata
+        self.cursor_coord[1]["y"] = event.ydata

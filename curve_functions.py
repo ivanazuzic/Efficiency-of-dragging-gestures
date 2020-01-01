@@ -48,7 +48,7 @@ class FunctionProvider:
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = 15/13 * x - 5
+            y[i] = 15 / 13 * x - 5
             i += 1
 
         return y
