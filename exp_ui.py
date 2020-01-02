@@ -31,6 +31,7 @@ class ExperimentWindow(tk.Frame):
         self.window.title("Task window")
 
         self.fig = Figure(figsize=(9, 7), dpi=100)
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)  # A tk.DrawingArea.
 
         # the following line always produces 100 equally spread points on the x_range
         self.t = np.arange(
@@ -40,37 +41,21 @@ class ExperimentWindow(tk.Frame):
         )
 
         self.fp = FunctionProvider()
-
         self.y = np.zeros(len(self.t))
-        self.y = self.fp.provide_function(difficulty, order[0], self.t)
+
 
         # these two are used for measuring how much time
         # it took the user to follow the function trajectory
         self.time_start = None
         self.time_end = None
 
-        self.graph = self.fig.add_subplot(111)  # this is the subplot on which we draw
-        self.graph.set_xlim([-40, 90]) # limiting the x axis range
-        self.graph.set_ylim([-80, 300]) # limiting the y axis range
-        self.graph.plot(self.t, self.y)  # plot the generated t and y
+        # this is the subplot on which we draw
+        self.graph = self.fig.add_subplot(111)
 
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)  # A tk.DrawingArea.
-        self.canvas.draw()
-
-        # store the background of the current canvas
-        # so that we don't have to repeatedly redraw it
-        # when plotting the cursor trajectory ---> increases FPS.
-        # the static background is constant and holds the original background
-        # (which contains only the bare function),
-        # but the dynamic background changes while the user is
-        # "drawing" (pressing the cursor) along the function trajectory.
-        # At the beginning, those two are equal.
-        self.static_background = self.fig.canvas.copy_from_bbox(
-            self.graph.bbox
-        )
-        self.dynamic_background = self.fig.canvas.copy_from_bbox(
-            self.graph.bbox
-        )
+        # this is the index of the function we're currently plotting
+        # starting from the first element in order[]
+        self.current_function_index = 0
+        self.init_plot(self.current_function_index)
 
         self.canvas.get_tk_widget().grid(row=0, column=0, rowspan=10)
 
@@ -86,14 +71,6 @@ class ExperimentWindow(tk.Frame):
         self.canvas.mpl_connect("button_release_event", self.on_mouse_up)
         self.canvas.mpl_connect("motion_notify_event", self.on_mouse_hover)
 
-        # this is the "Quit" button
-        self.button_quit = tk.Button(
-            master=self.window,
-            text="Quit",
-            command=self._quit
-        )
-        self.button_quit.grid(row=1, column=1)
-
         # this is the "Undo" button
         self.button_undo = tk.Button(
             master=self.window,
@@ -101,6 +78,26 @@ class ExperimentWindow(tk.Frame):
             command=self.undo_gesture
         )
         self.button_undo.grid(row=0, column=1)
+
+        # this is the "Next" button.
+        # it is disabled in the beginning - it should not be allowed
+        # to proceed to the next function without at least
+        # clicking on this one
+        self.button_next = tk.Button(
+            master=self.window,
+            text='Next',
+            command=self.next_function,
+            state="disabled"
+        )
+        self.button_next.grid(row=1, column=1)
+
+        # this is the "Quit" button
+        self.button_quit = tk.Button(
+            master=self.window,
+            text="Quit",
+            command=self._quit
+        )
+        self.button_quit.grid(row=2, column=1)
 
         self.window.after(self.SAMPLE_TIMEOUT, self.task)
 
@@ -148,8 +145,73 @@ class ExperimentWindow(tk.Frame):
         self.time_start = None
         self.time_end = None
 
+        # make the "Next" button unuseable
+        if self.button_next["state"] == "normal":
+            self.button_next["state"] = "disabled"
+
+    def init_plot(self, plot_index):
+        # this function initialises the plot
+        self.time_start = None
+        self.time_end = None
+
+        self.current_function_index = (self.current_function_index + 1) % 3
+        self.y = self.fp.provide_function(
+            self.difficulty,
+            self.order[plot_index],
+            self.t
+        )
+
+        # these two are used for measuring how much time
+        # it took the user to follow the function trajectory
+        self.time_start = None
+        self.time_end = None
+
+        self.graph.cla()
+        self.graph.set_xlim([-40, 90])  # limiting the x axis range
+        self.graph.set_ylim([-80, 300])  # limiting the y axis range
+        self.graph.plot(self.t, self.y)  # plot the generated t and y
+        self.canvas.draw()
+
+        # store the background of the current canvas
+        # so that we don't have to repeatedly redraw it
+        # when plotting the cursor trajectory ---> increases FPS.
+        # the static background is constant and holds the original background
+        # (which contains only the bare function),
+        # but the dynamic background changes while the user is
+        # "drawing" (pressing the cursor) along the function trajectory.
+        # At the beginning, those two are equal.
+        self.static_background = self.fig.canvas.copy_from_bbox(
+            self.graph.bbox
+        )
+        self.dynamic_background = self.fig.canvas.copy_from_bbox(
+            self.graph.bbox
+        )
+
+    def next_function(self):
+        self.current_function_index = (self.current_function_index + 1)
+        if(self.current_function_index >= len(self.order)):
+            # if all of the functions have been tested and
+            # there's nothing else to plot,
+            # quit the window
+
+            # FIXME: don't destroy the whole app,
+            # instead destroy only the frame which contains the plot
+            self._quit()
+            return
+
+        self.init_plot(self.current_function_index)  # initalise the next plot
+
+        # disable the "Next" button so that the user can't proceed without
+        # at least clicking on the new plot.
+        self.button_next["state"] = "disabled"
+
     def task(self):
         if self.is_mouse_pressed:
+            # if the mouse is pressed and the "Next" button is disabled,
+            # then enable it
+            if self.button_next["state"] == "disabled":
+                self.button_next["state"] = "normal"
+
             # TODO:
             # if mouse is pressed, check where the cursor lies,
             # check if it's near the example function
