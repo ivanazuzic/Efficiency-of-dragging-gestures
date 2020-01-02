@@ -11,7 +11,6 @@ class FunctionProvider:
         }
 
     def provide_function(self, difficulty, task, x):
-        print(x)
         if difficulty == 1 and task == 1:
             return self.function_curve_d1_t1(x)
         if difficulty == 1 and task == 2:

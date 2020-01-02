@@ -7,6 +7,7 @@ from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 
 import numpy as np
+import time
 
 from curve_functions import FunctionProvider
 
@@ -43,6 +44,11 @@ class ExperimentWindow(tk.Frame):
         self.y = np.zeros(len(self.t))
         self.y = self.fp.provide_function(difficulty, order[0], self.t)
 
+        # these two are used for measuring how much time
+        # it took the user to follow the function trajectory
+        self.time_start = None
+        self.time_end = None
+
         self.graph = self.fig.add_subplot(111)  # this is the subplot on which we draw
         self.graph.set_xlim([-40, 90]) # limiting the x axis range
         self.graph.set_ylim([-80, 300]) # limiting the y axis range
@@ -53,10 +59,20 @@ class ExperimentWindow(tk.Frame):
 
         # store the background of the current canvas
         # so that we don't have to repeatedly redraw it
-        # when plotting the cursor trajectory ---> increases FPS
-        self.background = self.fig.canvas.copy_from_bbox(self.graph.bbox)
+        # when plotting the cursor trajectory ---> increases FPS.
+        # the static background is constant and holds the original background
+        # (which contains only the bare function),
+        # but the dynamic background changes while the user is
+        # "drawing" (pressing the cursor) along the function trajectory.
+        # At the beginning, those two are equal.
+        self.static_background = self.fig.canvas.copy_from_bbox(
+            self.graph.bbox
+        )
+        self.dynamic_background = self.fig.canvas.copy_from_bbox(
+            self.graph.bbox
+        )
 
-        self.canvas.get_tk_widget().grid(row=0, column=0)
+        self.canvas.get_tk_widget().grid(row=0, column=0, rowspan=10)
 
         self.is_mouse_pressed = False
         # cursor_coord holds the last (ultimate)
@@ -70,13 +86,26 @@ class ExperimentWindow(tk.Frame):
         self.canvas.mpl_connect("button_release_event", self.on_mouse_up)
         self.canvas.mpl_connect("motion_notify_event", self.on_mouse_hover)
 
-        self.button = tk.Button(master=self.window, text="Quit", command=self._quit)
-        self.button.grid(row=2, column=0)
+        # this is the "Quit" button
+        self.button_quit = tk.Button(
+            master=self.window,
+            text="Quit",
+            command=self._quit
+        )
+        self.button_quit.grid(row=1, column=1)
+
+        # this is the "Undo" button
+        self.button_undo = tk.Button(
+            master=self.window,
+            text='Undo',
+            command=self.undo_gesture
+        )
+        self.button_undo.grid(row=0, column=1)
 
         self.window.after(self.SAMPLE_TIMEOUT, self.task)
 
         # Setting the windows size and initial position
-        width = 900
+        width = 1000
         height = 700
         self.window.geometry('{}x{}+{}+{}'.format(width, height, 10, 10))
 
@@ -100,6 +129,25 @@ class ExperimentWindow(tk.Frame):
         self.window.quit()
         self.window.destroy()
 
+    def undo_gesture(self):
+        # this is called when the user wants to undo their
+        # current trajectory.
+
+        # first, restore the original background
+        self.fig.canvas.restore_region(self.static_background)
+        self.fig.canvas.draw()
+
+        # now that the old background is restored,
+        # reset the dynamic background to be equal to the static one
+        # (as it is in the very beginning)
+        self.dynamic_background = self.fig.canvas.copy_from_bbox(
+            self.graph.bbox
+        )
+
+        # reset the current time
+        self.time_start = None
+        self.time_end = None
+
     def task(self):
         if self.is_mouse_pressed:
             # TODO:
@@ -108,7 +156,7 @@ class ExperimentWindow(tk.Frame):
             # and then do something smart with that information.
 
             # first, restore the currently saved background
-            self.fig.canvas.restore_region(self.background)
+            self.fig.canvas.restore_region(self.dynamic_background)
 
             # plot (only!) the line that connects the penultimate
             # and ultimate cursor location
@@ -127,7 +175,7 @@ class ExperimentWindow(tk.Frame):
             # update the canvas
             self.fig.canvas.blit(self.graph.bbox)
             # store the background again
-            self.background = self.fig.canvas.copy_from_bbox(self.graph.bbox)
+            self.dynamic_background = self.fig.canvas.copy_from_bbox(self.graph.bbox)
         else:
             # do something if mouse is not pressed...
             pass
@@ -141,11 +189,13 @@ class ExperimentWindow(tk.Frame):
         self.window.after(self.SAMPLE_TIMEOUT, self.task)
 
     def on_mouse_down(self, event):
+        self.time_start = time.time()
         print("you clicked")
         self.is_mouse_pressed = True
 
     def on_mouse_up(self, event):
-        print("you released")
+        self.time_end = time.time()
+        print("you released, your time (in seconds): ", self.time_end - self.time_start)
         self.is_mouse_pressed = False
 
     def on_mouse_hover(self, event):
