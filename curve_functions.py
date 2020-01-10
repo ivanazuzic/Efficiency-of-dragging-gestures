@@ -47,7 +47,7 @@ class FunctionProvider:
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = 15 / 13 * x - 5
+            y[i] = 15 / 13 * x + 2
             i += 1
 
         return y
@@ -60,19 +60,19 @@ class FunctionProvider:
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = math.exp(x)
+            y[i] = math.exp(x / 10) 
             i += 1
 
         return y
 
-    # Parabolic function
+    # Square root function
     def function_curve_d1_t3(self, x_arr):
         y = np.zeros(len(x_arr))
 
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = - 200 * x * x - 800 * x - 3
+            y[i] = math.sqrt(x) * 25 
             i += 1
 
         return y
@@ -86,16 +86,13 @@ class FunctionProvider:
 
         i = 0
         for x in x_arr:
-            if x <= 0:
-                # has to be greater than zero because of the logarithm domain
-                continue
             # calculate y for each given x
-            y[i] = 50 * math.log(x)
+            y[i] = 50 * math.sin(x / 3) + 100
             i += 1
 
         return y
 
-    # Cubic function
+    # Quadratic function
     def function_curve_d2_t2(self, x_arr):
 
         y = np.zeros(len(x_arr))
@@ -103,12 +100,12 @@ class FunctionProvider:
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = x * x * x
+            y[i] = (x - 15) * (x - 40) * (x - 5) * (x - 50) / 1000 + 80
             i += 1
 
         return y
 
-    # High degree polinome: x^5 * 3 - x^4
+    # High degree polinome
     def function_curve_d2_t3(self, x_arr):
 
         y = np.zeros(len(x_arr))
@@ -116,12 +113,12 @@ class FunctionProvider:
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = x*x*x*x*x * 3 - x*x*x*x
+            y[i] = (x - 1) * (x - 15) * (x - 25) * (x - 35) * (x - 49) / 20000 + 100
             i += 1
 
         return y
 
-    # Difficulyt: HARD
+    # Difficulty: HARD
 
     # This function has two parts,
     # equally divided across x_range.
@@ -132,14 +129,7 @@ class FunctionProvider:
         i = 0
         for x in range(len(y)):
             # calculate y for each generated t
-
-            diff = np.abs(self.x_range["end"] - self.x_range["start"])
-            divide_point = (diff / 2.0) + self.x_range["start"]
-
-            if(x > divide_point):
-                y[i] = 5 * np.sin(x)
-            else:
-                y[i] = x * x - 15 * x
+            y[i] = 50 * np.sin(x / 10) + 50 * np.cos(x / 5) + 20 * np.sin(x / 4) + 100
             i += 1
 
         return y
@@ -149,18 +139,14 @@ class FunctionProvider:
     def function_curve_d3_t2(self, x_arr):
 
         y = np.zeros(len(x_arr))
-
+        divide_point = 6 * math.pi
         i = 0
-        for x in range(len(y)):
+        for x in x_arr:
             # calculate y for each generated t
-
-            diff = np.abs(self.x_range["end"] - self.x_range["start"])
-            divide_point = (diff / 2.0) + self.x_range["start"]
-
-            if(x > divide_point):
-                y[i] = 5 * math.tan(x)
+            if(x < divide_point):
+                y[i] = 80 * math.sin(x / 2) + 100
             else:
-                y[i] = x * x * x - 7 * x * x - 15 * x
+                y[i] = (x - divide_point) * (x - 35) * (x - 43) / 17 + 100
             i += 1
 
         return y
@@ -170,11 +156,23 @@ class FunctionProvider:
 
         y = np.zeros(len(x_arr))
 
+        divide_point1 = 4 * math.pi
+        divide_point2 = 10 * math.pi
+
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = math.tan(x)
+            if x < divide_point1:
+                y[i] = 6 * (x - divide_point1)
+            elif x < divide_point2:
+                y[i] = 50 * math.sin(x / 2)
+            else:
+                y[i] = (x - divide_point2) * (x - divide_point2 - 17) * (x - divide_point2 - 5) * (x - divide_point2 - 9) / 100
+            y[i] *= 2
+            y[i] += 100
             i += 1
+
+        print(y) 
 
         return y
 

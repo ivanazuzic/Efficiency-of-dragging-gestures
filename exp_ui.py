@@ -19,12 +19,15 @@ class ExperimentWindow(tk.Frame):
         self.difficulty = difficulty
         self.order = order
 
+        print(order)
+
         self.SAMPLE_TIMEOUT = 10  # how much milliseconds pass between sampling
 
         self.x_range = {
             # start point and end point on which f(x) is defined
             "start": 0,
             "end": 50,
+            "delta": 10
         }
 
         self.window = tk.Toplevel()
@@ -150,11 +153,12 @@ class ExperimentWindow(tk.Frame):
             self.button_next["state"] = "disabled"
 
     def init_plot(self, plot_index):
+
+        print(self.order[plot_index])
         # this function initialises the plot
         self.time_start = None
         self.time_end = None
 
-        self.current_function_index = (self.current_function_index + 1) % 3
         self.y = self.fp.provide_function(
             self.difficulty,
             self.order[plot_index],
@@ -167,8 +171,14 @@ class ExperimentWindow(tk.Frame):
         self.time_end = None
 
         self.graph.cla()
-        self.graph.set_xlim([-40, 90])  # limiting the x axis range
-        self.graph.set_ylim([-80, 300])  # limiting the y axis range
+
+        # limiting the x axis range
+        self.graph.set_xlim([
+            self.x_range["start"] - self.x_range["delta"],
+            self.x_range["end"] + self.x_range["delta"]]
+        )
+        # limiting the y axis range
+        self.graph.set_ylim([-80, 300])
         self.graph.plot(self.t, self.y)  # plot the generated t and y
         self.canvas.draw()
 
@@ -198,7 +208,6 @@ class ExperimentWindow(tk.Frame):
             # instead destroy only the frame which contains the plot
             self._quit()
             return
-
         self.init_plot(self.current_function_index)  # initalise the next plot
 
         # disable the "Next" button so that the user can't proceed without
