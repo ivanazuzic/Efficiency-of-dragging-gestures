@@ -200,8 +200,6 @@ class ExperimentWindow(tk.Frame):
             # there's nothing else to plot,
             # quit the window
 
-            # FIXME: don't destroy the whole app,
-            # instead destroy only the frame which contains the plot
             self._quit()
             return
         self.init_plot(self.current_function_index)  # initalise the next plot
