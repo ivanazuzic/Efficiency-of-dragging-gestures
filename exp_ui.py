@@ -123,10 +123,6 @@ class ExperimentWindow(tk.Frame):
         return "break"
 
     def _quit(self):
-        # stops mainloop
-        # this is necessary on Windows to prevent
-        # Fatal Python Error: PyEval_RestoreThread: NULL tstate
-        self.window.quit()
         self.window.destroy()
 
     def undo_gesture(self):
