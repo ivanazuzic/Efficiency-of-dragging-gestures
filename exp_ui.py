@@ -19,8 +19,6 @@ class ExperimentWindow(tk.Frame):
         self.difficulty = difficulty
         self.order = order
 
-        print(order)
-
         # self.SAMPLE_TIMEOUT = 1  # how much milliseconds pass between sampling
 
         self.x_range = {
@@ -120,7 +118,6 @@ class ExperimentWindow(tk.Frame):
     def toggle_fullscreen(self, event=None):
         self.screen_state = not self.screen_state  # Just toggling the boolean
         self.window.attributes("-fullscreen", self.screen_state)
-        print("Toggle")
         return "break"
 
     def _quit(self):
@@ -150,8 +147,6 @@ class ExperimentWindow(tk.Frame):
             self.button_next["state"] = "disabled"
 
     def init_plot(self, plot_index):
-
-        print(self.order[plot_index])
         # this function initialises the plot
         self.time_start = None
         self.time_end = None

@@ -10,35 +10,32 @@ class FunctionProvider:
             "end": 50,
         }
 
+        self.function_array = [
+            [self.function_curve_d1_t1, self.function_curve_d1_t2],  # EASY
+            [self.function_curve_d2_t1, self.function_curve_d2_t2],  # MEDIUM
+            [self.function_curve_d3_t1, self.function_curve_d3_t2],  # HARD
+        ]
+
     def provide_function(self, difficulty, task, x):
-        if difficulty == 1 and task == 1:
-            return self.function_curve_d1_t1(x)
-        if difficulty == 1 and task == 2:
-            return self.function_curve_d1_t2(x)
-        if difficulty == 1 and task == 3:
-            return self.function_curve_d1_t3(x)
+        # because function_array's index is 0-based
+        task -= 1
+        difficulty -= 1
 
-        if difficulty == 2 and task == 1:
-            return self.function_curve_d2_t1(x)
-        if difficulty == 2 and task == 2:
-            return self.function_curve_d2_t2(x)
-        if difficulty == 2 and task == 3:
-            return self.function_curve_d2_t3(x)
+        if(
+            difficulty > len(self.function_array) or
+            task > len(self.function_array[difficulty])
+        ):
+            return None
 
-        if difficulty == 3 and task == 1:
-            return self.function_curve_d3_t1(x)
-        if difficulty == 3 and task == 2:
-            return self.function_curve_d3_t2(x)
-        if difficulty == 3 and task == 3:
-            return self.function_curve_d3_t3(x)
+        return self.function_array[difficulty][task](x)
 
     # ======= ALL THE FUNCTIONS =======
     # These are the functions we're plotting.
     # They return the values array y=f(x) 
     # for the given values x.
 
-    # Difficulyt: EASY
 
+    # Difficulty: EASY
     # Linear function
     def function_curve_d1_t1(self, x_arr):
 

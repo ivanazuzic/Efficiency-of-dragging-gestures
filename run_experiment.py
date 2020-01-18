@@ -49,16 +49,16 @@ class MainWindow(tk.Frame):
         # Entering the difficulty
         DIFFICULTY = ["Easy", "Medium", "Hard"]
         difficulty_label = tk.Label(text='Difficulty:')
-        difficulty_label.grid(row=3, column=0)  
+        difficulty_label.grid(row=3, column=0)
         difficulty = tk.StringVar(root)
         difficulty.set(DIFFICULTY[0])
         difficulty_entry = tk.OptionMenu(root, difficulty, *DIFFICULTY)
         difficulty_entry.grid(row=3, column=1)
 
         # Choosing the order of tasks
-        ORDER = ["1 2 3", "1 3 2", "2 3 1", "2 1 3", "3 1 2", "3 2 1"]
+        ORDER = ["1 2", "2 1"]
         order_label = tk.Label(text='Order of tasks:')
-        order_label.grid(row=4, column=0)  
+        order_label.grid(row=4, column=0)
         order = tk.StringVar(root)
         order.set(ORDER[0])
         order_entry = tk.OptionMenu(root, order, *ORDER)
@@ -66,7 +66,7 @@ class MainWindow(tk.Frame):
 
         # Button that starts the experiment
         b = tk.Button(root, text="Start experiment")
-        b.grid(row=5, column=0, columnspan=2)    
+        b.grid(row=5, column=0, columnspan=2)
         b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), difficulty.get(), order.get(), e))
 
         # Setting the windows size and initial position
@@ -92,14 +92,19 @@ class MainWindow(tk.Frame):
     def write_participants_data(self, row_to_write):
         self.sheet.append_row(row_to_write)  
     """
-    
+
     # Starts the experiment window
     def start_experiment(self, name, age, device, difficulty, order, event):
         # TODO: Uncomment this for the final experiment
         # epoch_time = int(time.time())
         # self.write_participants_data([name, age, device, difficulty, order, epoch_time])
-        level = {"Easy" : 1, "Medium" : 2, "Hard" : 3}
-        ExperimentWindow(self.parent, level[difficulty], tuple([int(x) for x in order.replace(' ', '')])) 
+        level = {"Easy": 1, "Medium": 2, "Hard": 3}
+        ExperimentWindow(
+            self.parent,
+            level[difficulty],
+            tuple([int(x) for x in order.replace(' ', '')])
+        )
+
 
 if __name__ == "__main__":
     root = tk.Tk()
