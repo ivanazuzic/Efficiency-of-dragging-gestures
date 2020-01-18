@@ -1,5 +1,7 @@
 import tkinter as tk
 from exp_ui import ExperimentWindow
+import random
+import numpy as np
 
 """
 #===THIS IS COMMENTED BECAUSE THE CONNECTION DATA IS IN AN UNCOMMITTED FILE===
@@ -46,28 +48,32 @@ class MainWindow(tk.Frame):
         device_entry = tk.OptionMenu(root, device, *AVAILABLE_DEVICES)
         device_entry.grid(row=2, column=1)
 
-        # Entering the difficulty
-        DIFFICULTY = ["Easy", "Medium", "Hard"]
-        difficulty_label = tk.Label(text='Difficulty:')
-        difficulty_label.grid(row=3, column=0)
-        difficulty = tk.StringVar(root)
-        difficulty.set(DIFFICULTY[0])
-        difficulty_entry = tk.OptionMenu(root, difficulty, *DIFFICULTY)
-        difficulty_entry.grid(row=3, column=1)
+        # # Entering the difficulty
+        # DIFFICULTY = ["Easy", "Medium", "Hard"]
+        # difficulty_label = tk.Label(text='Difficulty:')
+        # difficulty_label.grid(row=3, column=0)
+        # difficulty = tk.StringVar(root)
+        # difficulty.set(DIFFICULTY[0])
+        # difficulty_entry = tk.OptionMenu(root, difficulty, *DIFFICULTY)
+        # difficulty_entry.grid(row=3, column=1)
 
-        # Choosing the order of tasks
-        ORDER = ["1 2", "2 1"]
-        order_label = tk.Label(text='Order of tasks:')
-        order_label.grid(row=4, column=0)
-        order = tk.StringVar(root)
-        order.set(ORDER[0])
-        order_entry = tk.OptionMenu(root, order, *ORDER)
-        order_entry.grid(row=4, column=1)
+        # # Choosing the order of tasks
+        # ORDER = ["1 2", "2 1"]
+        # order_label = tk.Label(text='Order of tasks:')
+        # order_label.grid(row=4, column=0)
+        # order = tk.StringVar(root)
+        # order.set(ORDER[0])
+        # order_entry = tk.OptionMenu(root, order, *ORDER)
+        # order_entry.grid(row=4, column=1)
 
         # Button that starts the experiment
         b = tk.Button(root, text="Start experiment")
         b.grid(row=5, column=0, columnspan=2)
-        b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), difficulty.get(), order.get(), e))
+
+        # old version where we had to get the order and difficulty
+        # b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), difficulty.get(), order.get(), e))
+
+        b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), e))
 
         # Setting the windows size and initial position
         width = 350
@@ -94,15 +100,25 @@ class MainWindow(tk.Frame):
     """
 
     # Starts the experiment window
-    def start_experiment(self, name, age, device, difficulty, order, event):
+    def start_experiment(
+        self,
+        name,
+        age,
+        device,
+        # difficulty,
+        # order,
+        event
+    ):
+
         # TODO: Uncomment this for the final experiment
         # epoch_time = int(time.time())
         # self.write_participants_data([name, age, device, difficulty, order, epoch_time])
-        level = {"Easy": 1, "Medium": 2, "Hard": 3}
+        # level = {"Easy": 1, "Medium": 2, "Hard": 3}
+
         ExperimentWindow(
             self.parent,
-            level[difficulty],
-            tuple([int(x) for x in order.replace(' ', '')])
+            # level[difficulty],
+            # tuple([int(x) for x in order.replace(' ', '')])
         )
 
 

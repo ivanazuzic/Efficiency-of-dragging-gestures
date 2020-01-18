@@ -17,10 +17,6 @@ class FunctionProvider:
         ]
 
     def provide_function(self, difficulty, task, x):
-        # because function_array's index is 0-based
-        task -= 1
-        difficulty -= 1
-
         if(
             difficulty > len(self.function_array) or
             task > len(self.function_array[difficulty])
@@ -126,7 +122,9 @@ class FunctionProvider:
         i = 0
         for x in range(len(y)):
             # calculate y for each generated t
-            y[i] = 50 * np.sin(x / 10) + 50 * np.cos(x / 5) + 20 * np.sin(x / 4) + 100
+            # FIXME: change this function, when number of x is big enough,
+            # this function gets REALLY curvy
+            y[i] = 50 * np.sin(x / 1000) + 50 * np.cos(x / 500) + 20 * np.sin(x / 400) + 100
             i += 1
 
         return y

@@ -1,26 +1,61 @@
 import tkinter as tk
 
-from matplotlib.backends.backend_tkagg import (
-    FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 # Implement the default Matplotlib key bindings.
-from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 
+import random
 import numpy as np
 import time
 
 from curve_functions import FunctionProvider
 
+
 class ExperimentWindow(tk.Frame):
-    def __init__(self, parent, difficulty, order, *args, **kwargs):
+    def __init__(
+        self,
+        parent,
+        # difficulty,
+        # order,
+        *args,
+        **kwargs
+    ):
         tk.Frame.__init__(self, parent, *args, **kwargs)
 
         self.parent = parent
-        self.difficulty = difficulty
-        self.order = order
+        # self.difficulty = difficulty
+        # self.order = order
 
-        # self.SAMPLE_TIMEOUT = 1  # how much milliseconds pass between sampling
+        # ---------------- generating randomised order ---------------- #
+        self.order = []
+        # generate 3 passes through all functions
+        for i in range(3):
+            # generate 6 numbers to represent a single "pass"
+            # through all the functions,
+            # there are  3*2=6 functions in total.
+            tmp = np.cumsum(np.ones(6)) - 1
+            self.order = np.concatenate([self.order, tmp])
 
+        # flag that checks if there are two equal consecutive elements in array
+        two_equal = True
+        while(two_equal):
+            # if there are two consecutive elements that are equal,
+            # then shuffle the array
+            random.shuffle(self.order)
+
+            two_equal = False
+            # check again if there are two equal consecutive elements
+            for i in range(1, len(self.order)):
+                if self.order[i - 1] == self.order[i]:
+                    two_equal = True
+        # ---------------- !generating randomised order ---------------- #
+
+        print(self.order)
+        # this is the index of the function we're currently plotting
+        # starting from the first element in order[]
+        self.current_function_index = 0
+
+        # self.SAMPLE_TIMEOUT = 1 # how much milliseconds pass between sampling
         self.x_range = {
             # start point and end point on which f(x) is defined
             "start": 0,
@@ -32,18 +67,19 @@ class ExperimentWindow(tk.Frame):
         self.window.title("Task window")
 
         self.fig = Figure(figsize=(9, 7), dpi=100)
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)  # A tk.DrawingArea.
+        # A tk.DrawingArea.
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
 
-        # the following line always produces 100 equally spread points on the x_range
+        # the following line always produces
+        # 1000 equally spread points on the x_range
         self.t = np.arange(
             self.x_range["start"],
             self.x_range["end"],
-            np.abs(self.x_range["end"] - self.x_range["start"]) / 100.00
+            np.abs(self.x_range["end"] - self.x_range["start"]) / 1000.00
         )
 
         self.fp = FunctionProvider()
         self.y = np.zeros(len(self.t))
-
 
         # these two are used for measuring how much time
         # it took the user to follow the function trajectory
@@ -52,10 +88,6 @@ class ExperimentWindow(tk.Frame):
 
         # this is the subplot on which we draw
         self.graph = self.fig.add_subplot(111)
-
-        # this is the index of the function we're currently plotting
-        # starting from the first element in order[]
-        self.current_function_index = 0
         self.init_plot(self.current_function_index)
 
         self.canvas.get_tk_widget().grid(row=0, column=0, rowspan=10)
@@ -151,9 +183,14 @@ class ExperimentWindow(tk.Frame):
         self.time_start = None
         self.time_end = None
 
+        difficulty = int(self.order[plot_index] / 2)
+        task = int(self.order[plot_index] % 2)
+
+        print(difficulty, task)
+
         self.y = self.fp.provide_function(
-            self.difficulty,
-            self.order[plot_index],
+            difficulty,
+            task,
             self.t
         )
 
@@ -236,12 +273,14 @@ class ExperimentWindow(tk.Frame):
             # update the canvas
             self.fig.canvas.blit(self.graph.bbox)
             # store the background again
-            self.dynamic_background = self.fig.canvas.copy_from_bbox(self.graph.bbox)
+            self.dynamic_background = self.fig.canvas.copy_from_bbox(
+                self.graph.bbox
+            )
         else:
             # do something if mouse is not pressed...
             pass
 
-        # every [SAMPLE_TIMEOUT] milliseconds,
+        # each time this is called,
         # update the penultimate cursor location
         self.cursor_coord[0]["x"] = self.cursor_coord[1]["x"]
         self.cursor_coord[0]["y"] = self.cursor_coord[1]["y"]
