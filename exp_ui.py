@@ -21,7 +21,7 @@ class ExperimentWindow(tk.Frame):
 
         print(order)
 
-        self.SAMPLE_TIMEOUT = 10  # how much milliseconds pass between sampling
+        # self.SAMPLE_TIMEOUT = 1  # how much milliseconds pass between sampling
 
         self.x_range = {
             # start point and end point on which f(x) is defined
@@ -75,12 +75,13 @@ class ExperimentWindow(tk.Frame):
         self.canvas.mpl_connect("motion_notify_event", self.on_mouse_hover)
 
         # this is the "Undo" button
-        self.button_undo = tk.Button(
-            master=self.window,
-            text='Undo',
-            command=self.undo_gesture
-        )
-        self.button_undo.grid(row=0, column=1)
+        # EDIT: NOT NECESSARY
+        # self.button_undo = tk.Button(
+        #     master=self.window,
+        #     text='Undo',
+        #     command=self.undo_gesture
+        # )
+        # self.button_undo.grid(row=0, column=1)
 
         # this is the "Next" button.
         # it is disabled in the beginning - it should not be allowed
@@ -102,7 +103,7 @@ class ExperimentWindow(tk.Frame):
         )
         self.button_quit.grid(row=2, column=1)
 
-        self.window.after(self.SAMPLE_TIMEOUT, self.task)
+        # self.window.after(self.SAMPLE_TIMEOUT, self.task)
 
         # Setting the windows size and initial position
         width = 1000
@@ -251,9 +252,10 @@ class ExperimentWindow(tk.Frame):
         self.cursor_coord[0]["y"] = self.cursor_coord[1]["y"]
 
         # repeat this task in [SAMPLE_TIMEOUT] milliseconds...
-        self.window.after(self.SAMPLE_TIMEOUT, self.task)
+        # self.window.after(self.SAMPLE_TIMEOUT, self.task)
 
     def on_mouse_down(self, event):
+        self.undo_gesture()
         self.time_start = time.time()
         print("you clicked")
         self.is_mouse_pressed = True
@@ -264,6 +266,7 @@ class ExperimentWindow(tk.Frame):
         self.is_mouse_pressed = False
 
     def on_mouse_hover(self, event):
+        self.task()
         # this frequently updates the ultimate cursor location
         self.cursor_coord[1]["x"] = event.xdata
         self.cursor_coord[1]["y"] = event.ydata
