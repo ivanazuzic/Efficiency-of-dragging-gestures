@@ -59,8 +59,7 @@ class ExperimentWindow(tk.Frame):
         self.x_range = {
             # start point and end point on which f(x) is defined
             "start": 0,
-            "end": 50,
-            "delta": 10
+            "end": 5,
         }
 
         self.window = tk.Toplevel()
@@ -203,11 +202,11 @@ class ExperimentWindow(tk.Frame):
 
         # limiting the x axis range
         self.graph.set_xlim([
-            self.x_range["start"] - self.x_range["delta"],
-            self.x_range["end"] + self.x_range["delta"]]
-        )
+            self.x_range["start"] - (self.x_range["end"] - self.x_range["start"]) / 6,
+            self.x_range["end"] + (self.x_range["end"] - self.x_range["start"]) / 6
+        ])
         # limiting the y axis range
-        self.graph.set_ylim([-80, 300])
+        self.graph.set_ylim([-2.5, 2.5])
         self.graph.plot(self.t, self.y)  # plot the generated t and y
         self.canvas.draw()
 

@@ -40,7 +40,7 @@ class FunctionProvider:
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = 15 / 13 * x + 2
+            y[i] = 0.5 * (x - 2.5)
             i += 1
 
         return y
@@ -53,7 +53,7 @@ class FunctionProvider:
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = math.exp(x / 10) 
+            y[i] = math.exp(x) / 2**6 - 1
             i += 1
 
         return y
@@ -65,7 +65,7 @@ class FunctionProvider:
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = math.sqrt(x) * 25 
+            y[i] = math.sqrt(x)
             i += 1
 
         return y
@@ -80,7 +80,7 @@ class FunctionProvider:
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = 50 * math.sin(x / 3) + 100
+            y[i] = math.sin(x * 2)
             i += 1
 
         return y
@@ -93,7 +93,7 @@ class FunctionProvider:
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = (x - 15) * (x - 40) * (x - 5) * (x - 50) / 1000 + 80
+            y[i] = (x - 0.5) * (x - 1.7) * (x - 3.6) * (x - 4.6) / 7 - 1
             i += 1
 
         return y
@@ -106,7 +106,7 @@ class FunctionProvider:
         i = 0
         for x in x_arr:
             # calculate y for each given x
-            y[i] = (x - 1) * (x - 15) * (x - 25) * (x - 35) * (x - 49) / 20000 + 100
+            y[i] = (x - 0.3) * (x - 2) * (x - 3.4) * (x - 4) * (x - 4.5) / 2**2
             i += 1
 
         return y
@@ -122,9 +122,7 @@ class FunctionProvider:
         i = 0
         for x in range(len(y)):
             # calculate y for each generated t
-            # FIXME: change this function, when number of x is big enough,
-            # this function gets REALLY curvy
-            y[i] = 50 * np.sin(x / 1000) + 50 * np.cos(x / 500) + 20 * np.sin(x / 400) + 100
+            y[i] = np.sin(x/ 100) + np.sin(x / 477) + np.cos(x / 50) - 1
             i += 1
 
         return y
@@ -134,14 +132,11 @@ class FunctionProvider:
     def function_curve_d3_t2(self, x_arr):
 
         y = np.zeros(len(x_arr))
-        divide_point = 6 * math.pi
         i = 0
         for x in x_arr:
             # calculate y for each generated t
-            if(x < divide_point):
-                y[i] = 80 * math.sin(x / 2) + 100
-            else:
-                y[i] = (x - divide_point) * (x - 35) * (x - 43) / 17 + 100
+            # FIXME: place another function here...
+            y[i] = 0
             i += 1
 
         return y
