@@ -2,6 +2,7 @@ import tkinter as tk
 from exp_ui import ExperimentWindow
 import random
 import numpy as np
+from backing_up_locally import create_folder, write_to_file
 
 """
 #===THIS IS COMMENTED BECAUSE THE CONNECTION DATA IS IN AN UNCOMMITTED FILE===
@@ -115,8 +116,12 @@ class MainWindow(tk.Frame):
         # self.write_participants_data([name, age, device, difficulty, order, epoch_time])
         # level = {"Easy": 1, "Medium": 2, "Hard": 3}
 
+        create_folder(name, device)
+
         ExperimentWindow(
             self.parent,
+            name, 
+            device
             # level[difficulty],
             # tuple([int(x) for x in order.replace(' ', '')])
         )

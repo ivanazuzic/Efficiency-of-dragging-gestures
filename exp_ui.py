@@ -9,12 +9,15 @@ import numpy as np
 import time
 
 from curve_functions import FunctionProvider
+from backing_up_locally import create_folder, write_to_file
 
 
 class ExperimentWindow(tk.Frame):
     def __init__(
         self,
         parent,
+        participant_name,
+        device,
         # difficulty,
         # order,
         *args,
@@ -23,6 +26,8 @@ class ExperimentWindow(tk.Frame):
         tk.Frame.__init__(self, parent, *args, **kwargs)
 
         self.parent = parent
+        self.participant_name = participant_name
+        self.device = device
         # self.difficulty = difficulty
         # self.order = order
 
@@ -251,6 +256,14 @@ class ExperimentWindow(tk.Frame):
             # if mouse is pressed, check where the cursor lies,
             # check if it's near the example function
             # and then do something smart with that information.
+            print(self.participant_name, self.order[self.current_function_index], self.cursor_coord[0]["x"], self.cursor_coord[0]["y"])
+            write_to_file(
+                self.participant_name, 
+                self.device,
+                self.order,
+                self.current_function_index, 
+                self.cursor_coord[0]["x"],
+                self.cursor_coord[0]["y"])
 
             # first, restore the currently saved background
             self.fig.canvas.restore_region(self.dynamic_background)

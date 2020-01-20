@@ -1,0 +1,4 @@
+# Ignore the scripts to connect to the online spreadsheet
+connect.py
+# Ignore the local backup of drawn points
+Results_backup/
