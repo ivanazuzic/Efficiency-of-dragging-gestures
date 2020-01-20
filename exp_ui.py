@@ -9,7 +9,7 @@ import numpy as np
 import time
 
 from curve_functions import FunctionProvider
-from backing_up_locally import create_folder, write_to_file
+from backing_up_locally import *
 
 
 class ExperimentWindow(tk.Frame):
@@ -184,6 +184,14 @@ class ExperimentWindow(tk.Frame):
         if self.button_next["state"] == "normal":
             self.button_next["state"] = "disabled"
 
+        # delete the currently logged coordinates
+        delete_file(
+            self.participant_name,
+            self.device,
+            self.order,
+            self.current_function_index
+        )
+
     def init_plot(self, plot_index):
         # this function initialises the plot
         self.time_start = None
@@ -243,7 +251,7 @@ class ExperimentWindow(tk.Frame):
         )
         error = 0
         for y1, y2 in zip(self.y_drawn, actual_y):
-            error += abs(y1-y2)
+            error += abs(y1 - y2)
         print(error)
         # ---------
 
@@ -273,19 +281,23 @@ class ExperimentWindow(tk.Frame):
             # check if it's near the example function
             # and then do something smart with that information.
 
-            if self.cursor_coord[0]["x"] >= 0 and self.cursor_coord[0]["x"] <=5:
+            if (
+                self.cursor_coord[0]["x"] >= self.x_range["start"] and
+                self.cursor_coord[0]["x"] <= self.x_range["end"]
+            ):
                 self.x_drawn.append(self.cursor_coord[0]["x"])
                 self.y_drawn.append(self.cursor_coord[0]["y"])
 
                 # Log a coordinate to a local file
-                #print(self.participant_name, self.order[self.current_function_index], self.cursor_coord[0]["x"], self.cursor_coord[0]["y"])
+                # print(self.participant_name, self.order[self.current_function_index], self.cursor_coord[0]["x"], self.cursor_coord[0]["y"])
                 write_to_file(
-                    self.participant_name, 
+                    self.participant_name,
                     self.device,
                     self.order,
-                    self.current_function_index, 
+                    self.current_function_index,
                     self.cursor_coord[0]["x"],
-                    self.cursor_coord[0]["y"])
+                    self.cursor_coord[0]["y"]
+                )
 
             # first, restore the currently saved background
             self.fig.canvas.restore_region(self.dynamic_background)
