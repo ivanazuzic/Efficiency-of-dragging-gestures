@@ -256,7 +256,9 @@ class ExperimentWindow(tk.Frame):
             # if mouse is pressed, check where the cursor lies,
             # check if it's near the example function
             # and then do something smart with that information.
-            print(self.participant_name, self.order[self.current_function_index], self.cursor_coord[0]["x"], self.cursor_coord[0]["y"])
+
+            # Log a coordinate to a local file
+            #print(self.participant_name, self.order[self.current_function_index], self.cursor_coord[0]["x"], self.cursor_coord[0]["y"])
             write_to_file(
                 self.participant_name, 
                 self.device,
