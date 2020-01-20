@@ -31,6 +31,8 @@ class ExperimentWindow(tk.Frame):
         # self.difficulty = difficulty
         # self.order = order
 
+        self.x_drawn = []
+        self.y_drawn = []
         # ---------------- generating randomised order ---------------- #
         self.order = []
         # generate 3 passes through all functions
@@ -231,6 +233,20 @@ class ExperimentWindow(tk.Frame):
         )
 
     def next_function(self):
+        # error calculation
+        task = int(self.order[self.current_function_index] % 2)
+        difficulty = int(self.order[self.current_function_index] / 2)
+        actual_y = self.fp.provide_function(
+            difficulty,
+            task,
+            self.y_drawn
+        )
+        error = 0
+        for y1, y2 in zip(self.y_drawn, actual_y):
+            error += abs(y1-y2)
+        print(error)
+        # ---------
+
         self.current_function_index = (self.current_function_index + 1)
         if(self.current_function_index >= len(self.order)):
             # if all of the functions have been tested and
@@ -257,15 +273,19 @@ class ExperimentWindow(tk.Frame):
             # check if it's near the example function
             # and then do something smart with that information.
 
-            # Log a coordinate to a local file
-            #print(self.participant_name, self.order[self.current_function_index], self.cursor_coord[0]["x"], self.cursor_coord[0]["y"])
-            write_to_file(
-                self.participant_name, 
-                self.device,
-                self.order,
-                self.current_function_index, 
-                self.cursor_coord[0]["x"],
-                self.cursor_coord[0]["y"])
+            if self.cursor_coord[0]["x"] >= 0 and self.cursor_coord[0]["x"] <=5:
+                self.x_drawn.append(self.cursor_coord[0]["x"])
+                self.y_drawn.append(self.cursor_coord[0]["y"])
+
+                # Log a coordinate to a local file
+                #print(self.participant_name, self.order[self.current_function_index], self.cursor_coord[0]["x"], self.cursor_coord[0]["y"])
+                write_to_file(
+                    self.participant_name, 
+                    self.device,
+                    self.order,
+                    self.current_function_index, 
+                    self.cursor_coord[0]["x"],
+                    self.cursor_coord[0]["y"])
 
             # first, restore the currently saved background
             self.fig.canvas.restore_region(self.dynamic_background)
