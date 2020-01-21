@@ -67,14 +67,26 @@ class MainWindow(tk.Frame):
         # order_entry = tk.OptionMenu(root, order, *ORDER)
         # order_entry.grid(row=4, column=1)
 
+        # Choosing the experiment mode
+        experiment_mode_label = tk.Label(text='Experiment mode:')
+        experiment_mode_label.grid(row=3, column=0)
+        experiment_mode = tk.IntVar(0)
+        experiment_mode.set(0)
+        MODE = [0, 1]
+        mode_entry = tk.OptionMenu(root, experiment_mode, *MODE)
+        mode_entry.grid(row=3, column=1)
+
+        helper_label = tk.Label(text=('-'*60))
+        helper_label.grid(row=4, column=0, columnspan=2)
+
         # Button that starts the experiment
         b = tk.Button(root, text="Start experiment")
-        b.grid(row=5, column=0, columnspan=2)
+        b.grid(row=5, column=0, columnspan=2, sticky=tk.W)
 
         # old version where we had to get the order and difficulty
         # b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), difficulty.get(), order.get(), e))
 
-        b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), e))
+        b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), experiment_mode.get(), e))
 
         # Setting the windows size and initial position
         width = 350
@@ -106,8 +118,7 @@ class MainWindow(tk.Frame):
         name,
         age,
         device,
-        # difficulty,
-        # order,
+        experiment_mode,
         event
     ):
 
@@ -116,12 +127,14 @@ class MainWindow(tk.Frame):
         # self.write_participants_data([name, age, device, difficulty, order, epoch_time])
         # level = {"Easy": 1, "Medium": 2, "Hard": 3}
 
-        create_folder(name, device)
+        if name != '':
+            create_folder(name, experiment_mode, device)
 
         ExperimentWindow(
             self.parent,
             name, 
-            device
+            device, 
+            experiment_mode
             # level[difficulty],
             # tuple([int(x) for x in order.replace(' ', '')])
         )

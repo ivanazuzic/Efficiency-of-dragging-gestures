@@ -18,6 +18,7 @@ class ExperimentWindow(tk.Frame):
         parent,
         participant_name,
         device,
+        experiment_mode,
         # difficulty,
         # order,
         *args,
@@ -28,6 +29,7 @@ class ExperimentWindow(tk.Frame):
         self.parent = parent
         self.participant_name = participant_name
         self.device = device
+        self.experiment_mode = experiment_mode
         # self.difficulty = difficulty
         # self.order = order
 
@@ -187,6 +189,7 @@ class ExperimentWindow(tk.Frame):
         # delete the currently logged coordinates
         delete_file(
             self.participant_name,
+            self.experiment_mode,
             self.device,
             self.order,
             self.current_function_index
@@ -208,7 +211,7 @@ class ExperimentWindow(tk.Frame):
             difficulty,
             task,
             self.t,
-            0
+            self.experiment_mode
         )
 
         # this is for getting function ID
@@ -254,7 +257,7 @@ class ExperimentWindow(tk.Frame):
             difficulty,
             task,
             self.x_drawn,
-            0
+            self.experiment_mode
         )
         error = 0
         for y1, y2 in zip(self.y_drawn, actual_y):
@@ -299,6 +302,7 @@ class ExperimentWindow(tk.Frame):
                 # print(self.participant_name, self.order[self.current_function_index], self.cursor_coord[0]["x"], self.cursor_coord[0]["y"])
                 write_to_file(
                     self.participant_name,
+                    self.experiment_mode,
                     self.device,
                     self.order,
                     self.current_function_index,
