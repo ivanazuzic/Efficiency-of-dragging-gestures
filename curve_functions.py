@@ -77,51 +77,55 @@ class FunctionProvider:
 
     # Square root function
     def function_curve_d1_t3(self):
-        f = sp.sqrt(self.x)
+        f = sp.sqrt(self.x) - 0.5
         return f
 
-    # Square root function
+    # Linear function
     def function_curve_d1_t4(self):
-        f = self.x**2 / 4
+        f = -0.5 * (self.x - 2.5)
         return f
 
     # Difficulty: MEDIUM
 
-    # Logarithm
+    # Sine
     def function_curve_d2_t1(self):
         f = sp.sin(self.x * 2)
         return f
 
-    # Quadratic function
+    # Sine Gaussian
     def function_curve_d2_t2(self):
-        f = (self.x - 0.5) * (self.x - 1.7) * (self.x - 3.6) * (self.x - 4.6) / 7 - 1
+        f = self.make_sine_gaussian(2, -2, 1, 3, 50)
         return f
 
-    # High degree polinome
+    # Sine Gaussian
     def function_curve_d2_t3(self):
-        f = (self.x - 0.3) * (self.x - 2) * (self.x - 3.4) * (self.x - 4) * (self.x - 4.5) / 2**2
+        f = self.make_sine_gaussian(-1.5, -2, 0.8, 5, 30)
         return f
 
     # High degree polinome
     def function_curve_d2_t4(self):
-        f = (self.x - 0.3) * (self.x - 2) * (self.x - 3.4) * (self.x - 4) * (self.x - 4.5) / 2**2
+        f = (self.x - 0.5) * (self.x - 1.7) * (self.x - 3.6) * (self.x - 4.6) / 7 - 1
         return f
 
     # Difficulty: HARD
+    # Fourier
     def function_curve_d3_t1(self):
-        f = sp.sin(self.x / 100) + sp.sin(self.x / 477) + sp.cos(self.x / 50) - 1
+        f = self.make_fourier(0.5, 2, 0.2)
         return f
 
+    # Sine Gaussian
     def function_curve_d3_t2(self):
-        f = 1 + 0 * self.x
+        f = self.make_sine_gaussian(2, -2.5, 3, 5, 2.5)
         return f
 
+    # Sinc
     def function_curve_d3_t3(self):
-        f = 2 + 0 * self.x
+        f = self.make_sinc(17, 5, 6.1)
         return f
 
+    # Sine Gaussian
     def function_curve_d3_t4(self):
-        f = 2 + 0 * self.x
+        f = self.make_sine_gaussian(2, -1, 8, 5, 2.5)
         return f
 
     def calculate_y(self, function, x_arr):
@@ -135,7 +139,14 @@ class FunctionProvider:
 
         return y
 
+    def make_sine_gaussian(self, a, b, c, d, f):
+        return a * sp.exp(-(self.x + b)**2/c) * sp.sin(d * (self.x + f))
 
+    def make_sinc(self, a, b, c):
+        return a*sp.sin(b*(self.x-c)) / (b*(self.x-c))
+
+    def make_fourier(self, a, b, c):
+        return sp.sin(self.x /a) + sp.sin(self.x / b) + sp.cos(self.x / c) - 1
 
 """
 # Testing area
