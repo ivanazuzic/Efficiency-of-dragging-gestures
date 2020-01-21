@@ -19,7 +19,27 @@ class FunctionProvider:
             [self.function_curve_d3_t1, self.function_curve_d3_t2],  # HARD
         ]
 
-    def provide_function(self, difficulty, task, x):
+    def get_function_analysis(self, difficulty, task, x):
+        # gets index of difficulty for the function
+        if(
+            difficulty > len(self.function_array) or
+            task > len(self.function_array[difficulty])
+        ):
+            return None
+
+        f = self.function_array[difficulty][task]()
+
+        fder = f.diff(self.x)
+        fderder = fder.diff(self.x)
+
+        kappa = (fderder) / ((1 + (fder)**2)**(3 / 2))
+        print("curvature: ", kappa)
+
+        kappa = sp.lambdify(self.x, kappa, "numpy")
+
+        return 0
+
+    def provide_function_y(self, difficulty, task, x):
         if(
             difficulty > len(self.function_array) or
             task > len(self.function_array[difficulty])
@@ -82,7 +102,7 @@ class FunctionProvider:
 
     def calculate_y(self, function, x_arr):
         y = np.zeros(len(x_arr))
-        # get the function
+        # get the function for plotting
         f = sp.lambdify(self.x, function(), "numpy")
 
         for i in range(0, len(x_arr)):
@@ -90,6 +110,7 @@ class FunctionProvider:
             y[i] = f(x_arr[i])
 
         return y
+
 
 
 """

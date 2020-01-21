@@ -192,6 +192,10 @@ class ExperimentWindow(tk.Frame):
             self.current_function_index
         )
 
+        # clear the list of currently drawn coordinates
+        self.x_drawn = []
+        self.y_drawn = []
+
     def init_plot(self, plot_index):
         # this function initialises the plot
         self.time_start = None
@@ -202,7 +206,7 @@ class ExperimentWindow(tk.Frame):
 
         print(difficulty, task)
 
-        self.y = self.fp.provide_function(
+        self.y = self.fp.provide_function_y(
             difficulty,
             task,
             self.t
@@ -244,10 +248,10 @@ class ExperimentWindow(tk.Frame):
         # error calculation
         task = int(self.order[self.current_function_index] % 2)
         difficulty = int(self.order[self.current_function_index] / 2)
-        actual_y = self.fp.provide_function(
+        actual_y = self.fp.provide_function_y(
             difficulty,
             task,
-            self.y_drawn
+            self.x_drawn
         )
         error = 0
         for y1, y2 in zip(self.y_drawn, actual_y):
