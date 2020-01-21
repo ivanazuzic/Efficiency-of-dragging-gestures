@@ -39,7 +39,7 @@ class MainWindow(tk.Frame):
         age = tk.StringVar()
         age_entry = tk.Entry(root,textvariable=age, width=30)
         age_entry.grid(row=1, column=1)
-        
+
         # Entering the participants input device
         AVAILABLE_DEVICES = ["Mouse", "Trackpad", "Graphic tablet"]
         device_label = tk.Label(text='Input device:')

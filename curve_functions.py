@@ -1,9 +1,12 @@
 import math
 import numpy as np
+import sympy as sp
 import matplotlib.pyplot as plt
 
 class FunctionProvider:
     def __init__(self):
+        self.x = sp.Symbol("x")
+
         self.x_range = {
             # start point and end point on which f(x) is defined
             "start": 0,
@@ -23,148 +26,71 @@ class FunctionProvider:
         ):
             return None
 
-        return self.function_array[difficulty][task](x)
+        return self.calculate_y(self.function_array[difficulty][task], x)
 
     # ======= ALL THE FUNCTIONS =======
     # These are the functions we're plotting.
-    # They return the values array y=f(x) 
+    # They return the values array y=f(x)
     # for the given values x.
-
 
     # Difficulty: EASY
     # Linear function
-    def function_curve_d1_t1(self, x_arr):
-
-        y = np.zeros(len(x_arr))
-
-        i = 0
-        for x in x_arr:
-            # calculate y for each given x
-            y[i] = 0.5 * (x - 2.5)
-            i += 1
-
-        return y
+    def function_curve_d1_t1(self):
+        f = 0.5 * (self.x - 2.5)
+        return f
 
     # Exponential function
-    def function_curve_d1_t2(self, x_arr):
-
-        y = np.zeros(len(x_arr))
-
-        i = 0
-        for x in x_arr:
-            # calculate y for each given x
-            y[i] = math.exp(x) / 2**6 - 1
-            i += 1
-
-        return y
+    def function_curve_d1_t2(self):
+        f = sp.exp(self.x) / 2**6 - 1
+        return f
 
     # Square root function
-    def function_curve_d1_t3(self, x_arr):
-        y = np.zeros(len(x_arr))
+    def function_curve_d1_t3(self):
+        f = sp.sqrt(self.x)
+        return f
 
-        i = 0
-        for x in x_arr:
-            # calculate y for each given x
-            y[i] = math.sqrt(x)
-            i += 1
-
-        return y
-
-    # Difficulyt: MEDIUM
+    # Difficulty: MEDIUM
 
     # Logarithm
-    def function_curve_d2_t1(self, x_arr):
-
-        y = np.zeros(len(x_arr))
-
-        i = 0
-        for x in x_arr:
-            # calculate y for each given x
-            y[i] = math.sin(x * 2)
-            i += 1
-
-        return y
+    def function_curve_d2_t1(self):
+        f = sp.sin(self.x * 2)
+        return f
 
     # Quadratic function
-    def function_curve_d2_t2(self, x_arr):
-
-        y = np.zeros(len(x_arr))
-
-        i = 0
-        for x in x_arr:
-            # calculate y for each given x
-            y[i] = (x - 0.5) * (x - 1.7) * (x - 3.6) * (x - 4.6) / 7 - 1
-            i += 1
-
-        return y
+    def function_curve_d2_t2(self):
+        f = (self.x - 0.5) * (self.x - 1.7) * (self.x - 3.6) * (self.x - 4.6) / 7 - 1
+        return f
 
     # High degree polinome
-    def function_curve_d2_t3(self, x_arr):
-
-        y = np.zeros(len(x_arr))
-
-        i = 0
-        for x in x_arr:
-            # calculate y for each given x
-            y[i] = (x - 0.3) * (x - 2) * (x - 3.4) * (x - 4) * (x - 4.5) / 2**2
-            i += 1
-
-        return y
+    def function_curve_d2_t3(self):
+        f = (self.x - 0.3) * (self.x - 2) * (self.x - 3.4) * (self.x - 4) * (self.x - 4.5) / 2**2
+        return f
 
     # Difficulty: HARD
 
-    # This function has two parts,
-    # equally divided across x_range.
-    def function_curve_d3_t1(self, x_arr):
+    def function_curve_d3_t1(self):
+        f = sp.sin(self.x / 100) + sp.sin(self.x / 477) + sp.cos(self.x / 50) - 1
+        return f
 
+    def function_curve_d3_t2(self):
+        f = 1 + 0 * self.x
+        return f
+
+    def function_curve_d3_t3(self):
+        f = 2 + 0 * self.x
+        return f
+
+    def calculate_y(self, function, x_arr):
         y = np.zeros(len(x_arr))
+        # get the function
+        f = sp.lambdify(self.x, function(), "numpy")
 
-        i = 0
-        for x in range(len(y)):
-            # calculate y for each generated t
-            y[i] = np.sin(x/ 100) + np.sin(x / 477) + np.cos(x / 50) - 1
-            i += 1
+        for i in range(0, len(x_arr)):
+            # calculate y for each given y
+            y[i] = f(x_arr[i])
 
         return y
 
-    # This function has two parts,
-    # equally divided across x_range.
-    def function_curve_d3_t2(self, x_arr):
-
-        y = np.zeros(len(x_arr))
-        i = 0
-        for x in x_arr:
-            # calculate y for each generated t
-            # FIXME: place another function here...
-            y[i] = 0
-            i += 1
-
-        return y
-
-    # Tangens
-    def function_curve_d3_t3(self, x_arr):
-
-        y = np.zeros(len(x_arr))
-
-        divide_point1 = 4 * math.pi
-        divide_point2 = 10 * math.pi
-
-        i = 0
-        for x in x_arr:
-            # calculate y for each given x
-            if x < divide_point1:
-                y[i] = 6 * (x - divide_point1)
-            elif x < divide_point2:
-                y[i] = 50 * math.sin(x / 2)
-            else:
-                y[i] = (x - divide_point2) * (x - divide_point2 - 17) * (x - divide_point2 - 5) * (x - divide_point2 - 9) / 100
-            y[i] *= 2
-            y[i] += 100
-            i += 1
-
-        print(y) 
-
-        return y
 
 """
 # Testing area

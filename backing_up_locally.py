@@ -13,8 +13,8 @@ def create_folder(name, device):
         pass
 
 
-def write_to_file(name, device, order, x, y):
-    filename = "Results_backup/" + name + '/' + device + '/' + str(order[function_id]) + '_' + '.txt'
+def write_to_file(name, device, order, function_id, x, y):
+    filename = "Results_backup/" + name + '/' + device + '/' + str(order[function_id]) + '_' + str(function_id) + '.txt'
 
     with open(
         filename,

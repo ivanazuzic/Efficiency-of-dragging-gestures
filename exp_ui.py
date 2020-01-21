@@ -78,10 +78,10 @@ class ExperimentWindow(tk.Frame):
 
         # the following line always produces
         # 1000 equally spread points on the x_range
-        self.t = np.arange(
+        self.t = np.linspace(
             self.x_range["start"],
             self.x_range["end"],
-            np.abs(self.x_range["end"] - self.x_range["start"]) / 1000.00
+            1000
         )
 
         self.fp = FunctionProvider()
