@@ -14,6 +14,9 @@ def create_folder(name, device):
 
 
 def write_to_file(name, device, order, function_id, x, y):
+    if(name == ""):
+        return
+
     filename = "Results_backup/" + name + '/' + device + '/' + str(order[function_id]) + '_' + str(function_id) + '.txt'
 
     with open(
