@@ -204,13 +204,14 @@ class ExperimentWindow(tk.Frame):
         difficulty = int(self.order[plot_index] / 2)
         task = int(self.order[plot_index] % 2)
 
-        print(difficulty, task)
-
         self.y = self.fp.provide_function_y(
             difficulty,
             task,
             self.t
         )
+
+        # this is for getting function ID
+        # self.fp.get_function_analysis(difficulty, task, self.t)
 
         # these two are used for measuring how much time
         # it took the user to follow the function trajectory

@@ -1,17 +1,10 @@
-import math
 import numpy as np
 import sympy as sp
-import matplotlib.pyplot as plt
+
 
 class FunctionProvider:
     def __init__(self):
         self.x = sp.Symbol("x")
-
-        self.x_range = {
-            # start point and end point on which f(x) is defined
-            "start": 0,
-            "end": 50,
-        }
 
         self.function_array = [
             [self.function_curve_d1_t1, self.function_curve_d1_t2],  # EASY
@@ -32,10 +25,17 @@ class FunctionProvider:
         fder = f.diff(self.x)
         fderder = fder.diff(self.x)
 
-        kappa = (fderder) / ((1 + (fder)**2)**(3 / 2))
-        print("curvature: ", kappa)
+        kappa = (fderder) / ((1 + (fder)**2)**(3 / 2)) + f
+        kappa = sp.sqrt(kappa ** 2)
 
-        kappa = sp.lambdify(self.x, kappa, "numpy")
+        print("curvature: ", kappa)
+        curvature_integral = sp.integrate(kappa, self.x)
+
+        print(curvature_integral)
+
+        curvature_integral = sp.lambdify(curvature_integral, self.x)
+        print(curvature_integral(np.array([0])))
+        print(curvature_integral(np.array([5])))
 
         return 0
 
