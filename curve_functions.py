@@ -7,9 +7,19 @@ class FunctionProvider:
         self.x = sp.Symbol("x")
 
         self.function_array = [
-            [self.function_curve_d1_t1, self.function_curve_d1_t2],  # EASY
-            [self.function_curve_d2_t1, self.function_curve_d2_t2],  # MEDIUM
-            [self.function_curve_d3_t1, self.function_curve_d3_t2],  # HARD
+            # functions for test 1
+            [
+                [self.function_curve_d1_t1, self.function_curve_d1_t2],  # EASY
+                [self.function_curve_d2_t1, self.function_curve_d2_t2],  # MEDIUM
+                [self.function_curve_d3_t1, self.function_curve_d3_t2],  # HARD
+            ],
+
+            # functions for test 2
+            [
+                [self.function_curve_d1_t3, self.function_curve_d1_t4],  # EASY
+                [self.function_curve_d2_t3, self.function_curve_d2_t4],  # MEDIUM
+                [self.function_curve_d3_t3, self.function_curve_d3_t4],  # HARD
+            ]
         ]
 
     def get_function_analysis(self, difficulty, task, x):
@@ -39,14 +49,15 @@ class FunctionProvider:
 
         return 0
 
-    def provide_function_y(self, difficulty, task, x):
+    def provide_function_y(self, difficulty, task, x, test_index):
         if(
-            difficulty > len(self.function_array) or
-            task > len(self.function_array[difficulty])
+            test_index > len(self.function_array) or
+            difficulty > len(self.function_array[test_index]) or
+            task > len(self.function_array[test_index][difficulty])
         ):
             return None
 
-        return self.calculate_y(self.function_array[difficulty][task], x)
+        return self.calculate_y(self.function_array[test_index][difficulty][task], x)
 
     # ======= ALL THE FUNCTIONS =======
     # These are the functions we're plotting.
@@ -69,6 +80,11 @@ class FunctionProvider:
         f = sp.sqrt(self.x)
         return f
 
+    # Square root function
+    def function_curve_d1_t4(self):
+        f = self.x**2 / 4
+        return f
+
     # Difficulty: MEDIUM
 
     # Logarithm
@@ -86,8 +102,12 @@ class FunctionProvider:
         f = (self.x - 0.3) * (self.x - 2) * (self.x - 3.4) * (self.x - 4) * (self.x - 4.5) / 2**2
         return f
 
-    # Difficulty: HARD
+    # High degree polinome
+    def function_curve_d2_t4(self):
+        f = (self.x - 0.3) * (self.x - 2) * (self.x - 3.4) * (self.x - 4) * (self.x - 4.5) / 2**2
+        return f
 
+    # Difficulty: HARD
     def function_curve_d3_t1(self):
         f = sp.sin(self.x / 100) + sp.sin(self.x / 477) + sp.cos(self.x / 50) - 1
         return f
@@ -97,6 +117,10 @@ class FunctionProvider:
         return f
 
     def function_curve_d3_t3(self):
+        f = 2 + 0 * self.x
+        return f
+
+    def function_curve_d3_t4(self):
         f = 2 + 0 * self.x
         return f
 

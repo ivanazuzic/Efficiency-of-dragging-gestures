@@ -207,7 +207,8 @@ class ExperimentWindow(tk.Frame):
         self.y = self.fp.provide_function_y(
             difficulty,
             task,
-            self.t
+            self.t,
+            0
         )
 
         # this is for getting function ID
@@ -252,7 +253,8 @@ class ExperimentWindow(tk.Frame):
         actual_y = self.fp.provide_function_y(
             difficulty,
             task,
-            self.x_drawn
+            self.x_drawn,
+            0
         )
         error = 0
         for y1, y2 in zip(self.y_drawn, actual_y):
