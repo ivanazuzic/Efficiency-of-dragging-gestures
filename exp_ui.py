@@ -11,12 +11,22 @@ import time
 from curve_functions import FunctionProvider
 from backing_up_locally import *
 
+# ~~~~~~~~~
+#===THIS IS COMMENTED BECAUSE THE CONNECTION DATA IS IN AN UNCOMMITTED FILE===
+# TODO: Uncomment this for the final experiment
+# import to connect to Google Sheets API
+from connect import connect
+#import to get the current timestamp
+import time as time
+# ~~~~~~~~~
+
 
 class ExperimentWindow(tk.Frame):
     def __init__(
         self,
         parent,
         participant_name,
+        age,
         device,
         experiment_mode,
         # difficulty,
@@ -28,6 +38,7 @@ class ExperimentWindow(tk.Frame):
 
         self.parent = parent
         self.participant_name = participant_name
+        self.age = age
         self.device = device
         self.experiment_mode = experiment_mode
         # self.difficulty = difficulty
@@ -35,6 +46,15 @@ class ExperimentWindow(tk.Frame):
 
         self.x_drawn = []
         self.y_drawn = []
+        self.drawing_time = 0
+
+        # ~~~~~~~~~
+        # connect() uses Google Sheets API to connect to 
+        # the spreadsheet that we'll write to
+        # TODO: Uncomment this for the final experiment
+        self.sheet = connect()
+        # ~~~~~~~~~
+
         # ---------------- generating randomised order ---------------- #
         self.order = []
         # generate 3 passes through all functions
@@ -279,6 +299,24 @@ class ExperimentWindow(tk.Frame):
         # at least clicking on the new plot.
         self.button_next["state"] = "disabled"
 
+        # ~~~~~~~~~
+        # TODO: Uncomment this for the final experiment
+        if self.participant_name != "":
+            epoch_time = int(time.time())
+            ID = self.order[self.current_function_index-1] 
+            difficulty = ID // 2
+            self.sheet.append_row([
+                self.participant_name, 
+                self.age, 
+                self.device, 
+                epoch_time,
+                ID,
+                difficulty, 
+                self.drawing_time,
+                error,
+                self.experiment_mode])        
+        # ~~~~~~~~~
+
     def task(self):
         if self.is_mouse_pressed:
             # if the mouse is pressed and the "Next" button is disabled,
@@ -354,6 +392,7 @@ class ExperimentWindow(tk.Frame):
     def on_mouse_up(self, event):
         self.time_end = time.time()
         print("you released, your time (in seconds): ", self.time_end - self.time_start)
+        self.drawing_time = self.time_end - self.time_start
         self.is_mouse_pressed = False
 
     def on_mouse_hover(self, event):

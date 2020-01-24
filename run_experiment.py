@@ -133,6 +133,7 @@ class MainWindow(tk.Frame):
         ExperimentWindow(
             self.parent,
             name, 
+            age,
             device, 
             experiment_mode
             # level[difficulty],
