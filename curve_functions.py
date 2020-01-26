@@ -22,32 +22,34 @@ class FunctionProvider:
             ]
         ]
 
-    def get_function_analysis(self, difficulty, task, x):
+    def get_function_analysis(self, difficulty, task, x, test_index):
         # gets index of difficulty for the function
         if(
-            difficulty > len(self.function_array) or
-            task > len(self.function_array[difficulty])
+            test_index > len(self.function_array) or
+            difficulty > len(self.function_array[test_index]) or
+            task > len(self.function_array[test_index][difficulty])
         ):
             return None
 
-        f = self.function_array[difficulty][task]()
+        f = self.function_array[test_index][difficulty][task]()
 
         fder = f.diff(self.x)
+        print("fder:", fder)
         fderder = fder.diff(self.x)
+        print("fderder:", fderder)
 
-        kappa = (fderder) / ((1 + (fder)**2)**(3 / 2)) + f
-        kappa = sp.sqrt(kappa ** 2)
+        kappa = sp.sqrt((fderder)**2) / ((1 + (fder)**2)**(3 / 2)) + 1
 
-        print("curvature: ", kappa)
-        curvature_integral = sp.integrate(kappa, self.x)
+        print("kappa:", kappa)
+        curvature_integral = sp.integrate(kappa, (self.x, 0, 5))
 
-        print(curvature_integral)
+        print("curvature_integral:", curvature_integral)
 
-        curvature_integral = sp.lambdify(curvature_integral, self.x)
-        print(curvature_integral(np.array([0])))
-        print(curvature_integral(np.array([5])))
+        # curvature_integral = sp.lambdify(curvature_integral, self.x)
+        # print(curvature_integral(np.array([0])))
+        # print(curvature_integral(np.array([5])))
 
-        return 0
+        return curvature_integral
 
     def provide_function_y(self, difficulty, task, x, test_index):
         if(
