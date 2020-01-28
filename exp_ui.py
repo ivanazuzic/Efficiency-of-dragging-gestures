@@ -285,6 +285,25 @@ class ExperimentWindow(tk.Frame):
         print(error)
         # ---------
 
+        # ~~~~~~~~~
+        # TODO: Uncomment this for the final experiment
+        if self.participant_name != "":
+            print("Logiram")
+            epoch_time = int(time.time())
+            ID = self.order[self.current_function_index] 
+            difficulty = ID // 2
+            self.sheet.append_row([
+                self.participant_name, 
+                self.age, 
+                self.device, 
+                epoch_time,
+                ID,
+                difficulty, 
+                self.drawing_time,
+                error,
+                self.experiment_mode])        
+        # ~~~~~~~~~
+
         self.current_function_index = (self.current_function_index + 1)
         if(self.current_function_index >= len(self.order)):
             # if all of the functions have been tested and
@@ -298,24 +317,6 @@ class ExperimentWindow(tk.Frame):
         # disable the "Next" button so that the user can't proceed without
         # at least clicking on the new plot.
         self.button_next["state"] = "disabled"
-
-        # ~~~~~~~~~
-        # TODO: Uncomment this for the final experiment
-        if self.participant_name != "":
-            epoch_time = int(time.time())
-            ID = self.order[self.current_function_index-1] 
-            difficulty = ID // 2
-            self.sheet.append_row([
-                self.participant_name, 
-                self.age, 
-                self.device, 
-                epoch_time,
-                ID,
-                difficulty, 
-                self.drawing_time,
-                error,
-                self.experiment_mode])        
-        # ~~~~~~~~~
 
     def task(self):
         if self.is_mouse_pressed:
