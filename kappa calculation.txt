@@ -1,0 +1,52 @@
+Difficulty 1 function 1
+-----------------------
+Kappa
+y = sqrt((D[D[2.5 + 0.5 (-2.5 + x), x], x])**2) / ((1 + (D[2.5 + 0.5 (-2.5 + x), x])**2)**(3 / 2)) + 1 
+Result: y = 1
+Integral kappe od 0 do 5
+Integrate[sqrt((D[D[2.5 + 0.5 (-2.5 + x), x], x])**2) / ((1+(D[2.5 + 0.5 (-2.5 + x), x])**2)**(3 / 2))+1, {x, 0, 5}]
+Result(ID): 5
+
+Difficulty 1 function 2
+-----------------------
+Integrate[sqrt((D[D[exp(x) / 2**6 - 1 + 2.5, x], x])**2) / ((1+(D[exp(x) / 2**6 - 1 + 2.5, x])**2)**(3 / 2))+1, {x, 0, 5}]
+Result(ID): 5.902636184618400511304371468476520940651959838291413581563
+
+Difficulty 1 function 3
+-----------------------
+Integrate[sqrt((D[D[sqrt(x) - 0.5+ 2.5, x], x])**2) / ((1+(D[sqrt(x) - 0.5+ 2.5, x])**2)**(3 / 2))+1, {x, 0, 5}]
+Result(ID): 5.781782109764007618733902514584380548143597305868191814161...
+
+Difficulty 1 function 4
+-----------------------
+Integrate[sqrt((D[D[-0.5 * (x - 2.5)+ 2.5, x], x])**2) / ((1+(D[-0.5 * (x - 2.5)+ 2.5, x])**2)**(3 / 2))+1, {x, 0, 5}]
+Result(ID): 5
+
+Difficulty 2 function 1
+-----------------------
+Integrate[sqrt((D[D[sin(x * 2)+ 2.5, x], x])**2) / ((1+(D[sin(x * 2)+ 2.5, x])**2)**(3 / 2))+1, {x, 0, 5}]
+Result(ID): 10.4019
+
+Difficulty 2 function 2
+-----------------------
+
+Difficulty 2 function 3
+-----------------------
+
+Difficulty 2 function 4
+-----------------------
+Integrate[sqrt((D[D[(x - 0.5) * (x - 1.7) * (x - 3.6) * (x - 4.6) / 7 - 1+ 2.5, x], x])**2) / ((1+(D[(x - 0.5) * (x - 1.7) * (x - 3.6) * (x - 4.6) / 7 - 1+ 2.5, x])**2)**(3 / 2))+1, {x, 0, 5}]
+Result(ID): 9.63308
+
+Difficulty 3 function 1
+-----------------------
+
+Difficulty 3 function 2
+-----------------------
+
+Difficulty 3 function 3
+-----------------------
+
+Difficulty 3 function 4
+-----------------------
+

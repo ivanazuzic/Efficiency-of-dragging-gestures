@@ -86,6 +86,7 @@ def calculate_all_user_movement_integrals():
         userdir = os.listdir(path + str(test))
         results_arr[test] = {}
         for user in userdir:
+            print(user)
             # for each user
             results_arr[test][user] = {}
             devicedir = os.listdir(path + str(test) + "/" + user)
