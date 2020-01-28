@@ -2,20 +2,61 @@ from curve_functions import *
 import os
 import json
 import sympy as sp
+import numpy as np
 
 fp = FunctionProvider()
+x = sp.Symbol("x")
 
 
 def calculate_curvature_integral():
+    integrals_approx = {}
     for test in range(len(fp.function_array)):
+        integrals_approx[test] = {}
         for difficulty in range(len(fp.function_array[test])):
-            for task in range(len(fp.function_array[test][difficulty])):
-                print(test, difficulty, task)
-                analysis = fp.get_function_analysis(difficulty, task, np.linspace(0, 5, 1000), test)
-                print(analysis)
+            tasks_num = len(fp.function_array[test][difficulty])
+            for task in range(tasks_num):
+                function_id = tasks_num * difficulty + task
+                print("########## Test mode:", test, "; Difficlty:", difficulty, "; Task:", task)
+                kappa = fp.get_function_curvature(difficulty, task, test)
+                print(kappa)
+                kappa = sp.lambdify(x, kappa, "numpy")
 
+                # because of the complex calculation revolving the curvature
+                # (kappa), we instead calculate its approximation
+                # by summing up y values for each x0 in such a way that
+                # the distance between two x0 points is infinitely small
+                integral_approx = 0
+                x0 = 0.00  # begin point
+                x1 = 5.00  # end point
+                # number of points we want to sum up (must be very big)
+                numpoints = (x1 - x0) * 100000.00
+                # distance between two points (will be very small)
+                delta = (x1 - x0) / numpoints
+                i = 0
+                while x0 < x1:
+                    # put integral_approx calculation inside try-except
+                    # in case we get "division by zero" exception.
+                    if(i % (numpoints / 10) == 0):
+                        # this condition is meant to represent a "loading bar"
+                        # it will print the current percentage of points processed
+                        print(round(x0 / x1, 3) * 100, "%  done")
+                    try:
+                        integral_approx += kappa(x0)
+                    except Exception as e:
+                        # this might, on very rare occassions, be
+                        # "division by zero"
+                        print(e)
+                    finally:
+                        x0 += delta
+                        i += 1
 
-x = sp.Symbol("x")
+                print("Integral: ", integral_approx, "\n")
+                integrals_approx[test][str(function_id)] = str(integral_approx)
+
+    file = open("curvature_integrals.json", "w")
+    file.write(json.dumps(integrals_approx, sort_keys=True, indent=4))
+    file.close()
+
 
 def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
     foldername = (
@@ -100,4 +141,7 @@ def calculate_all_user_movement_integrals():
     file.close()
 
 
-calculate_all_user_movement_integrals()
+# uncomment this to calculate integral of all user movements
+# calculate_all_user_movement_integrals()
+
+calculate_curvature_integral()

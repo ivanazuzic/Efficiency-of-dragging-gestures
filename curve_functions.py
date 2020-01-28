@@ -22,7 +22,7 @@ class FunctionProvider:
             ]
         ]
 
-    def get_function_analysis(self, difficulty, task, x, test_index):
+    def get_function_curvature(self, difficulty, task, test_index):
         # gets index of difficulty for the function
         if(
             test_index > len(self.function_array) or
@@ -34,22 +34,14 @@ class FunctionProvider:
         f = self.function_array[test_index][difficulty][task]()
 
         fder = f.diff(self.x)
-        print("fder:", fder)
         fderder = fder.diff(self.x)
-        print("fderder:", fderder)
 
         kappa = sp.sqrt((fderder)**2) / ((1 + (fder)**2)**(3 / 2)) + 1
-
-        print("kappa:", kappa)
-        curvature_integral = sp.integrate(kappa, (self.x, 0, 5))
-
-        print("curvature_integral:", curvature_integral)
-
+        # curvature_integral = sp.integrate(kappa, (self.x, 0, 5))
         # curvature_integral = sp.lambdify(curvature_integral, self.x)
         # print(curvature_integral(np.array([0])))
         # print(curvature_integral(np.array([5])))
-
-        return curvature_integral
+        return kappa
 
     def provide_function_y(self, difficulty, task, x, test_index):
         if(
