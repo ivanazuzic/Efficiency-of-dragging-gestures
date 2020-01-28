@@ -22,7 +22,7 @@ class MainWindow(tk.Frame):
         # the spreadsheet that we'll write to
         # TODO: Uncomment this for the final experiment
         #self.sheet = connect()
-            
+
         # Creating the UI for entering the participants data
         # and for mode selection 
 
