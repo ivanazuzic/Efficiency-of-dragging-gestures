@@ -3,4 +3,8 @@ connect.py
 # Ignore the local backup of drawn points
 Results_backup0/
 Results_backup1/
+Results_backup2/
+Results_backup3/
 movement_integrals.json
+# ignore pycache
+__pycache__/

@@ -15,7 +15,7 @@ from backing_up_locally import *
 #===THIS IS COMMENTED BECAUSE THE CONNECTION DATA IS IN AN UNCOMMITTED FILE===
 # TODO: Uncomment this for the final experiment
 # import to connect to Google Sheets API
-from connect import connect
+# from connect import connect
 #import to get the current timestamp
 import time as time
 # ~~~~~~~~~
@@ -52,7 +52,7 @@ class ExperimentWindow(tk.Frame):
         # connect() uses Google Sheets API to connect to 
         # the spreadsheet that we'll write to
         # TODO: Uncomment this for the final experiment
-        self.sheet = connect()
+        # self.sheet = connect()
         # ~~~~~~~~~
 
         # ---------------- generating randomised order ---------------- #
@@ -90,6 +90,14 @@ class ExperimentWindow(tk.Frame):
             "start": 0,
             "end": 5,
         }
+        if self.experiment_mode == 2 or self.experiment_mode == 3:
+            # if the coordinates are in poolar coor system, the x_range is different
+            self.x_range = {
+                # start point and end point on which f(x) is defined
+                "start": 0,
+                "end": 360,
+            }
+
 
         self.window = tk.Toplevel()
         self.window.title("Task window")
@@ -115,7 +123,14 @@ class ExperimentWindow(tk.Frame):
         self.time_end = None
 
         # this is the subplot on which we draw
-        self.graph = self.fig.add_subplot(111)
+        self.graph = None
+        if self.experiment_mode == 0 or self.experiment_mode == 1:
+            # the subplot is in cartesian coordinates
+            self.graph = self.fig.add_subplot(111)
+        elif self.experiment_mode == 2 or self.experiment_mode == 3:
+            # the subplot is in polar coordinates
+            self.graph = self.fig.add_subplot(111, projection="polar")
+
         self.init_plot(self.current_function_index)
 
         self.canvas.get_tk_widget().grid(row=0, column=0, rowspan=10)
@@ -244,15 +259,18 @@ class ExperimentWindow(tk.Frame):
 
         self.graph.cla()
 
-        # limiting the x axis range
-        self.graph.set_xlim([
-            self.x_range["start"] - (self.x_range["end"] - self.x_range["start"]) / 6,
-            self.x_range["end"] + (self.x_range["end"] - self.x_range["start"]) / 6
-        ])
-        # limiting the y axis range
-        self.graph.set_ylim([-2.5, 2.5])
-        self.graph.plot(self.t, self.y)  # plot the generated t and y
+        if self.experiment_mode == 0 or self.experiment_mode == 1:        
+            # limiting the x axis range
+            # but only if coordinates are Cartesian
+            self.graph.set_xlim([
+                self.x_range["start"] - (self.x_range["end"] - self.x_range["start"]) / 6,
+                self.x_range["end"] + (self.x_range["end"] - self.x_range["start"]) / 6
+            ])
+            # limiting the y axis range
+            self.graph.set_ylim([-2.5, 2.5])
+        self.graph.plot(self.t, self.y)  # plot the generated t and y            
         self.canvas.draw()
+
 
         # store the background of the current canvas
         # so that we don't have to repeatedly redraw it
@@ -282,7 +300,7 @@ class ExperimentWindow(tk.Frame):
         error = 0
         for y1, y2 in zip(self.y_drawn, actual_y):
             error += abs(y1 - y2)
-        print(error)
+        print("Error:", error)
         # ---------
 
         # ~~~~~~~~~
@@ -309,9 +327,9 @@ class ExperimentWindow(tk.Frame):
             # if all of the functions have been tested and
             # there's nothing else to plot,
             # quit the window
-
             self._quit()
             return
+
         self.init_plot(self.current_function_index)  # initalise the next plot
 
         # disable the "Next" button so that the user can't proceed without

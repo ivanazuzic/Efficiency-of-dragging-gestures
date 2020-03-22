@@ -19,7 +19,19 @@ class FunctionProvider:
                 [self.function_curve_d1_t3, self.function_curve_d1_t4],  # EASY
                 [self.function_curve_d2_t3, self.function_curve_d2_t4],  # MEDIUM
                 [self.function_curve_d3_t3, self.function_curve_d3_t4],  # HARD
-            ]
+            ],
+            # functions for test 3
+            [
+                [self.function_curve_d1_t5, self.function_curve_d1_t6],  # EASY
+                [self.function_curve_d2_t5, self.function_curve_d2_t6],  # MEDIUM
+                [self.function_curve_d3_t5, self.function_curve_d3_t6],  # HARD
+            ],
+            # functions for test 2
+            [
+                [self.function_curve_d1_t7, self.function_curve_d1_t8],  # EASY
+                [self.function_curve_d2_t7, self.function_curve_d2_t8],  # MEDIUM
+                [self.function_curve_d3_t7, self.function_curve_d3_t8],  # HARD
+            ],
         ]
 
     def get_function_curvature(self, difficulty, task, test_index):
@@ -79,6 +91,26 @@ class FunctionProvider:
         f = -0.5 * (self.x - 2.5)
         return f
 
+    ##### Polar Coordinates #####
+    def function_curve_d1_t5(self):
+        f = sp.cos(self.x)
+        return f
+
+    ##### Polar Coordinates #####
+    def function_curve_d1_t6(self):
+        f = sp.cos(self.x)
+        return f
+
+    ##### Polar Coordinates #####
+    def function_curve_d1_t7(self):
+        f = sp.sin(self.x)
+        return f
+    
+    ##### Polar Coordinates #####
+    def function_curve_d1_t8(self):
+        f = sp.sin(self.x)
+        return f
+
     # Difficulty: MEDIUM
 
     # Sine
@@ -101,6 +133,26 @@ class FunctionProvider:
         f = (self.x - 0.5) * (self.x - 1.7) * (self.x - 3.6) * (self.x - 4.6) / 7 - 1
         return f
 
+    ##### Polar Coordinates #####
+    def function_curve_d2_t5(self):
+        f = sp.cos(self.x)
+        return f
+
+    ##### Polar Coordinates #####
+    def function_curve_d2_t6(self):
+        f = sp.cos(self.x)
+        return f
+
+    ##### Polar Coordinates #####
+    def function_curve_d2_t7(self):
+        f = sp.sin(self.x)
+        return f
+    
+    ##### Polar Coordinates #####
+    def function_curve_d2_t8(self):
+        f = sp.sin(self.x)
+        return f
+
     # Difficulty: HARD
     # Fourier
     def function_curve_d3_t1(self):
@@ -120,6 +172,26 @@ class FunctionProvider:
     # Sine Gaussian
     def function_curve_d3_t4(self):
         f = self.make_sine_gaussian(2, -1, 8, 5, 2.5)
+        return f    
+
+    ##### Polar Coordinates #####
+    def function_curve_d3_t5(self):
+        f = sp.cos(self.x)
+        return f
+
+    ##### Polar Coordinates #####
+    def function_curve_d3_t6(self):
+        f = sp.cos(self.x)
+        return f
+
+    ##### Polar Coordinates #####
+    def function_curve_d3_t7(self):
+        f = sp.sin(self.x)
+        return f
+    
+    ##### Polar Coordinates #####
+    def function_curve_d3_t8(self):
+        f = sp.sin(self.x)
         return f
 
     def calculate_y(self, function, x_arr):
