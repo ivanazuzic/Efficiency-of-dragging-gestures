@@ -60,28 +60,13 @@ class ExperimentWindow(tk.Frame):
         # starting from the first element in order[]
         self.current_function_index = 0
 
-        # self.SAMPLE_TIMEOUT = 1 # how much milliseconds pass between sampling
-        self.x_range = {
-            # start point and end point on which f(x) is defined
-            "start": 0,
-            "end": 5,
-        }
-        if self.is_plot_cartestian() is False:
-            # if the coordinates are in poolar coor system, the x_range is different
-            self.x_range = {
-                # start point and end point on which f(x) is defined
-                "start": 0,
-                "end": 360,
-            }
-
-
         self.window = tk.Toplevel()
         self.window.title("Task window")
 
         self.fig = Figure(figsize=(9, 7), dpi=100)
         # A tk.DrawingArea.
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
-
+        self.x_range, self.graph = self.init_graph()
         # the following line always produces
         # 1000 equally spread points on the x_range
         self.t = np.linspace(
@@ -97,15 +82,6 @@ class ExperimentWindow(tk.Frame):
         # it took the user to follow the function trajectory
         self.time_start = None
         self.time_end = None
-
-        # this is the subplot on which we draw
-        self.graph = None
-        if self.is_plot_cartestian() is True:
-            # the subplot is in cartesian coordinates
-            self.graph = self.fig.add_subplot(111)
-        else:
-            # the subplot is in polar coordinates
-            self.graph = self.fig.add_subplot(111, projection="polar")
 
         self.init_plot(self.current_function_index)
 
@@ -164,6 +140,28 @@ class ExperimentWindow(tk.Frame):
         self.screen_state = False
         self.window.attributes("-fullscreen", self.screen_state)
         self.window.bind("<Escape>", self.toggle_fullscreen)
+
+    def init_graph(self):
+        x_range = {}
+        graph = None
+        if self.is_plot_cartestian() is True:
+            # init cartesian graph
+            x_range = {
+                # start point and end point on which f(x) is defined
+                "start": 0,
+                "end": 5,
+            }
+            graph = self.fig.add_subplot(111)
+        else:
+            # init polar graph
+            x_range = {
+                # start point and end point on which f(x) is defined
+                "start": 0,
+                "end": 360,
+            }
+            graph = self.fig.add_subplot(111, projection="polar")
+
+        return x_range, graph
 
     # Toggles to full screen and back
     def toggle_fullscreen(self, event=None):
@@ -284,18 +282,18 @@ class ExperimentWindow(tk.Frame):
         if self.participant_name != "":
             print("Logiram")
             epoch_time = int(time.time())
-            ID = self.order[self.current_function_index] 
+            ID = self.order[self.current_function_index]
             difficulty = ID // 2
             self.sheet.append_row([
-                self.participant_name, 
-                self.age, 
-                self.device, 
+                self.participant_name,
+                self.age,
+                self.device,
                 epoch_time,
                 ID,
-                difficulty, 
+                difficulty,
                 self.drawing_time,
                 error,
-                self.experiment_mode])        
+                self.experiment_mode])
         # ~~~~~~~~~
 
         self.current_function_index = (self.current_function_index + 1)
@@ -397,7 +395,6 @@ class ExperimentWindow(tk.Frame):
         self.cursor_coord[1]["y"] = event.ydata
 
     def generate_random_function_order(self):
-
         # ---------------- generating randomised order ---------------- #
         order = []
         # generate 3 passes through all functions
