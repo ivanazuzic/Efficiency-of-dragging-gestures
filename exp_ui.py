@@ -242,9 +242,16 @@ class ExperimentWindow(tk.Frame):
             ])
             # limiting the y axis range
             self.graph.set_ylim([-2.5, 2.5])
+        else:
+            # if the coordinates are polar,
+            # make the y (which is r in polar) larger
+            self.graph.set_ylim([-1.2, 1.8])
+            # this removes the radius (r)
+            self.graph.set_yticks([])
+
+
         self.graph.plot(self.t, self.y)  # plot the generated t and y            
         self.canvas.draw()
-
 
         # store the background of the current canvas
         # so that we don't have to repeatedly redraw it
