@@ -54,31 +54,7 @@ class ExperimentWindow(tk.Frame):
         # TODO: Uncomment this for the final experiment
         # self.sheet = connect()
         # ~~~~~~~~~
-
-        # ---------------- generating randomised order ---------------- #
-        self.order = []
-        # generate 3 passes through all functions
-        for i in range(3):
-            # generate 6 numbers to represent a single "pass"
-            # through all the functions,
-            # there are  3*2=6 functions in total.
-            tmp = np.cumsum(np.ones(6)) - 1
-            self.order = np.concatenate([self.order, tmp])
-
-        # flag that checks if there are two equal consecutive elements in array
-        two_equal = True
-        while(two_equal):
-            # if there are two consecutive elements that are equal,
-            # then shuffle the array
-            random.shuffle(self.order)
-
-            two_equal = False
-            # check again if there are two equal consecutive elements
-            for i in range(1, len(self.order)):
-                if self.order[i - 1] == self.order[i]:
-                    two_equal = True
-        # ---------------- !generating randomised order ---------------- #
-
+        self.order = self.generate_random_function_order()
         print(self.order)
         # this is the index of the function we're currently plotting
         # starting from the first element in order[]
@@ -90,7 +66,7 @@ class ExperimentWindow(tk.Frame):
             "start": 0,
             "end": 5,
         }
-        if self.experiment_mode == 2 or self.experiment_mode == 3:
+        if self.is_plot_cartestian() is False:
             # if the coordinates are in poolar coor system, the x_range is different
             self.x_range = {
                 # start point and end point on which f(x) is defined
@@ -124,10 +100,10 @@ class ExperimentWindow(tk.Frame):
 
         # this is the subplot on which we draw
         self.graph = None
-        if self.experiment_mode == 0 or self.experiment_mode == 1:
+        if self.is_plot_cartestian() is True:
             # the subplot is in cartesian coordinates
             self.graph = self.fig.add_subplot(111)
-        elif self.experiment_mode == 2 or self.experiment_mode == 3:
+        else:
             # the subplot is in polar coordinates
             self.graph = self.fig.add_subplot(111, projection="polar")
 
@@ -259,7 +235,7 @@ class ExperimentWindow(tk.Frame):
 
         self.graph.cla()
 
-        if self.experiment_mode == 0 or self.experiment_mode == 1:        
+        if self.is_plot_cartestian()is True:
             # limiting the x axis range
             # but only if coordinates are Cartesian
             self.graph.set_xlim([
@@ -419,3 +395,33 @@ class ExperimentWindow(tk.Frame):
         # this frequently updates the ultimate cursor location
         self.cursor_coord[1]["x"] = event.xdata
         self.cursor_coord[1]["y"] = event.ydata
+
+    def generate_random_function_order(self):
+
+        # ---------------- generating randomised order ---------------- #
+        order = []
+        # generate 3 passes through all functions
+        for i in range(3):
+            # generate 6 numbers to represent a single "pass"
+            # through all the functions,
+            # there are  3*2=6 functions in total.
+            tmp = np.cumsum(np.ones(6)) - 1
+            order = np.concatenate([order, tmp])
+
+        # flag that checks if there are two equal consecutive elements in array
+        two_equal = True
+        while(two_equal):
+            # if there are two consecutive elements that are equal,
+            # then shuffle the array
+            random.shuffle(order)
+
+            two_equal = False
+            # check again if there are two equal consecutive elements
+            for i in range(1, len(order)):
+                if order[i - 1] == order[i]:
+                    two_equal = True
+        # ---------------- !generating randomised order ---------------- #
+        return order
+
+    def is_plot_cartestian(self):
+        return self.experiment_mode == 0 or self.experiment_mode == 1
