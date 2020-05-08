@@ -8,3 +8,4 @@ Results_backup3/
 movement_integrals.json
 # ignore pycache
 __pycache__/
+*.pyc
