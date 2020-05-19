@@ -1,7 +1,6 @@
 import numpy as np
 import sympy as sp
 
-
 class FunctionProvider:
     def __init__(self):
         self.x = sp.Symbol("x")
@@ -26,7 +25,7 @@ class FunctionProvider:
                 [self.function_curve_d2_t5, self.function_curve_d2_t6],  # MEDIUM
                 [self.function_curve_d3_t5, self.function_curve_d3_t6],  # HARD
             ],
-            # functions for test 2
+            # functions for test 4
             [
                 [self.function_curve_d1_t7, self.function_curve_d1_t8],  # EASY
                 [self.function_curve_d2_t7, self.function_curve_d2_t8],  # MEDIUM
@@ -36,6 +35,7 @@ class FunctionProvider:
 
     def get_function_curvature(self, difficulty, task, test_index):
         # gets index of difficulty for the function
+        kappa = None
         if(
             test_index > len(self.function_array) or
             difficulty > len(self.function_array[test_index]) or
@@ -44,15 +44,14 @@ class FunctionProvider:
             return None
 
         f = self.function_array[test_index][difficulty][task]()
-
         fder = f.diff(self.x)
         fderder = fder.diff(self.x)
 
-        kappa = sp.sqrt((fderder)**2) / ((1 + (fder)**2)**(3 / 2)) + 1
-        # curvature_integral = sp.integrate(kappa, (self.x, 0, 5))
-        # curvature_integral = sp.lambdify(curvature_integral, self.x)
-        # print(curvature_integral(np.array([0])))
-        # print(curvature_integral(np.array([5])))
+        if is_cartesian((test_index)):
+            kappa = sp.sqrt((fderder)**2) / ((1 + (fder)**2)**(3 / 2)) + 1
+        else:
+            # kappa for polar coordinates
+            kappa = abs(f**2 + 2 * fder**2 - f * fderder) / ((fder**2 + f**2) ** (3 / 2))
         return kappa
 
     def provide_function_y(self, difficulty, task, x, test_index):
@@ -213,6 +212,10 @@ class FunctionProvider:
 
     def make_fourier(self, a, b, c):
         return sp.sin(self.x /a) + sp.sin(self.x / b) + sp.cos(self.x / c) - 1
+
+
+def is_cartesian(test_index):
+    return test_index == 0 or test_index == 1
 
 """
 # Testing area

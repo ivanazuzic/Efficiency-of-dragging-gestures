@@ -8,7 +8,7 @@ import random
 import numpy as np
 import time
 
-from curve_functions import FunctionProvider
+from curve_functions import FunctionProvider, is_cartesian
 from backing_up_locally import *
 
 # ~~~~~~~~~
@@ -286,21 +286,21 @@ class ExperimentWindow(tk.Frame):
 
         # ~~~~~~~~~
         # TODO: Uncomment this for the final experiment
-        if self.participant_name != "":
-            print("Logiram")
-            epoch_time = int(time.time())
-            ID = self.order[self.current_function_index]
-            difficulty = ID // 2
-            self.sheet.append_row([
-                self.participant_name,
-                self.age,
-                self.device,
-                epoch_time,
-                ID,
-                difficulty,
-                self.drawing_time,
-                error,
-                self.experiment_mode])
+        # if self.participant_name != "":
+        #     print("Logiram")
+        #     epoch_time = int(time.time())
+        #     ID = self.order[self.current_function_index]
+        #     difficulty = ID // 2
+        #     self.sheet.append_row([
+        #         self.participant_name,
+        #         self.age,
+        #         self.device,
+        #         epoch_time,
+        #         ID,
+        #         difficulty,
+        #         self.drawing_time,
+        #         error,
+        #         self.experiment_mode])
         # ~~~~~~~~~
 
         self.current_function_index = (self.current_function_index + 1)
@@ -428,4 +428,4 @@ class ExperimentWindow(tk.Frame):
         return order
 
     def is_plot_cartestian(self):
-        return self.experiment_mode == 0 or self.experiment_mode == 1
+        return is_cartesian(self.experiment_mode)

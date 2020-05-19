@@ -21,6 +21,10 @@ def calculate_curvature_integral():
                 print(kappa)
                 kappa = sp.lambdify(x, kappa, "numpy")
 
+                if(is_cartesian(test) is False):
+                    # TODO Implement integral calculation for polar coordinates
+                    continue
+                continue
                 # because of the complex calculation revolving the curvature
                 # (kappa), we instead calculate its approximation
                 # by summing up y values for each x0 in such a way that
