@@ -92,22 +92,22 @@ class FunctionProvider:
 
     ##### Polar Coordinates #####
     def function_curve_d1_t5(self):
-        f = sp.cos(self.x)
+        f = sp.cos(3 * self.x)
         return f
 
     ##### Polar Coordinates #####
     def function_curve_d1_t6(self):
-        f = sp.cos(self.x)
+        f = sp.cos(3 * self.x)
         return f
 
     ##### Polar Coordinates #####
     def function_curve_d1_t7(self):
-        f = sp.sin(self.x)
+        f = sp.sin(3 * self.x)
         return f
     
     ##### Polar Coordinates #####
     def function_curve_d1_t8(self):
-        f = sp.sin(self.x)
+        f = sp.sin(3 * self.x)
         return f
 
     # Difficulty: MEDIUM
@@ -175,22 +175,22 @@ class FunctionProvider:
 
     ##### Polar Coordinates #####
     def function_curve_d3_t5(self):
-        f = sp.cos(self.x)
+        f = sp.cos(self.x) + sp.sin(self.x)
         return f
 
     ##### Polar Coordinates #####
     def function_curve_d3_t6(self):
-        f = sp.cos(self.x)
+        f = sp.cos(self.x) + sp.sin(self.x)
         return f
 
     ##### Polar Coordinates #####
     def function_curve_d3_t7(self):
-        f = sp.sin(self.x)
+        f = sp.sin(self.x) + sp.sin(self.x)
         return f
     
     ##### Polar Coordinates #####
     def function_curve_d3_t8(self):
-        f = sp.sin(self.x)
+        f = sp.sin(self.x) + sp.sin(self.x)
         return f
 
     def calculate_y(self, function, x_arr):

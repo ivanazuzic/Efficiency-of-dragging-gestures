@@ -3,6 +3,7 @@ import os
 import json
 import sympy as sp
 import numpy as np
+import math
 
 fp = FunctionProvider()
 x = sp.Symbol("x")
@@ -16,24 +17,29 @@ def calculate_curvature_integral():
             tasks_num = len(fp.function_array[test][difficulty])
             for task in range(tasks_num):
                 function_id = tasks_num * difficulty + task
-                print("########## Test mode:", test, "; Difficlty:", difficulty, "; Task:", task)
+                print("########## Test mode:", test + 1, "; Difficlty:", difficulty + 1, "; Task:", task + 1)
                 kappa = fp.get_function_curvature(difficulty, task, test)
-                print(kappa)
-                kappa = sp.lambdify(x, kappa, "numpy")
-
-                if(is_cartesian(test) is False):
-                    # TODO Implement integral calculation for polar coordinates
-                    continue
-                continue
+                # print("Sympy intergation:", sp.integrate(kappa,x), sp.integrate(kappa, (x, 0, math.pi / 3)), "\n")
                 # because of the complex calculation revolving the curvature
                 # (kappa), we instead calculate its approximation
                 # by summing up y values for each x0 in such a way that
                 # the distance between two x0 points is infinitely small
+
+                if(is_cartesian(test) is False):
+                    # if coordinates are polar, then we sum up phi values from 0 to 360
+                    x0 = 0
+                    x1 = math.pi
+                    # and our kappa function is 0.5 * kappa ** 2 (because of the polar coordinate integration rules)
+                    kappa = 0.5 * kappa ** 2
+                else:
+                    # if coordinates are cartesian, we sum up from 0 do 5 (this is where our functions are defined)
+                    x0 = 0.00  # begin point
+                    x1 = 5.00  # end point
+                print(kappa)
+                kappa = sp.lambdify(x, kappa, "numpy")
                 integral_approx = 0
-                x0 = 0.00  # begin point
-                x1 = 5.00  # end point
-                # number of points we want to sum up (must be very big)
-                numpoints = (x1 - x0) * 100000.00
+                # number of points we want to sum up, the bigger the better
+                numpoints = 1000.00
                 # distance between two points (will be very small)
                 delta = (x1 - x0) / numpoints
                 i = 0
@@ -45,7 +51,8 @@ def calculate_curvature_integral():
                         # it will print the current percentage of points processed
                         print(round(x0 / x1, 3) * 100, "%  done")
                     try:
-                        integral_approx += kappa(x0)
+                        # Riemann sum
+                        integral_approx += abs(kappa(x0) * delta)
                     except Exception as e:
                         # this might, on very rare occassions, be
                         # "division by zero"
