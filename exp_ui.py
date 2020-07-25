@@ -128,6 +128,11 @@ class ExperimentWindow(tk.Frame):
         )
         self.button_quit.grid(row=2, column=1)
 
+        self.cur_coord_stringvar = tk.StringVar()
+        self.cur_coord_stringvar.set("")
+        self.cur_coord_label = tk.Label(master=self.window, textvariable=self.cur_coord_stringvar)
+        self.cur_coord_label.grid(row=3, column=1)
+
         # self.window.after(self.SAMPLE_TIMEOUT, self.task)
 
         # Setting the windows size and initial position
@@ -398,8 +403,11 @@ class ExperimentWindow(tk.Frame):
     def on_mouse_hover(self, event):
         self.task()
         # this frequently updates the ultimate cursor location
-        self.cursor_coord[1]["x"] = event.xdata
-        self.cursor_coord[1]["y"] = event.ydata
+        if(event.xdata is not None and event.ydata is not None):
+            self.cursor_coord[1]["x"] = event.xdata
+            self.cursor_coord[1]["y"] = event.ydata
+            # change value in current label to display current cursor coordinate
+            self.cur_coord_stringvar.set(str(round(event.xdata, 2)) + " " + str(round(event.ydata, 2)))
 
     def generate_random_function_order(self):
         # ---------------- generating randomised order ---------------- #

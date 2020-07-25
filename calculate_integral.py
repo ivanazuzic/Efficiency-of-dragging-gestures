@@ -37,30 +37,8 @@ def calculate_curvature_integral():
                     x1 = 5.00  # end point
                 print(kappa)
                 kappa = sp.lambdify(x, kappa, "numpy")
-                integral_approx = 0
-                # number of points we want to sum up, the bigger the better
-                numpoints = 1000.00
-                # distance between two points (will be very small)
-                delta = (x1 - x0) / numpoints
-                i = 0
-                while x0 < x1:
-                    # put integral_approx calculation inside try-except
-                    # in case we get "division by zero" exception.
-                    if(i % (numpoints / 10) == 0):
-                        # this condition is meant to represent a "loading bar"
-                        # it will print the current percentage of points processed
-                        print(round(x0 / x1, 3) * 100, "%  done")
-                    try:
-                        # Riemann sum
-                        integral_approx += abs(kappa(x0) * delta)
-                    except Exception as e:
-                        # this might, on very rare occassions, be
-                        # "division by zero"
-                        print(e)
-                    finally:
-                        x0 += delta
-                        i += 1
 
+                integral_approx = calculate_riemann_integral(kappa, x0, x1, 1000)
                 print("Integral: ", integral_approx, "\n")
                 integrals_approx[test][str(function_id)] = str(integral_approx)
 
@@ -69,7 +47,33 @@ def calculate_curvature_integral():
     file.close()
 
 
-def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
+def calculate_riemann_integral(f, x0, x1, numpoints):
+    integral_approx = 0
+    # distance between two points (will be very small)
+    delta = (x1 - x0) / numpoints
+    i = 0
+    while x0 < x1:
+        # put integral_approx calculation inside try-except
+        # in case we get "division by zero" exception.
+        if(i % (numpoints / 10) == 0):
+            # this condition is meant to represent a "loading bar"
+            # it will print the current percentage of points processed
+            # print(round(x0 / x1, 3) * 100, "%  done")
+            pass
+        try:
+            # Riemann sum
+            integral_approx += abs(f(x0) * delta)
+        except Exception as e:
+            # this might, on very rare occassions, be
+            # "division by zero"
+            print(e)
+        finally:
+            x0 += delta
+            i += 1
+    return integral_approx
+
+
+def calculate_user_movement_integral(user, experiment_mode=2, device="Mouse"):
     foldername = (
         "Results_backup" +
         str(experiment_mode) +
@@ -109,13 +113,18 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
 
                 # get the equation of the line on which point1 and point2 lay
                 f = (y2 - y1) / (x2 - x1) * (x - x1) + y1
-                # calculate integral of surface where f is the upper bound
-                # and -2.5 is lower_bound
-                tmp = sp.integrate(f - (-2.5), (x, x1, x2))
+                if(is_cartesian(task) is False):
+                    f = 0.5 * f**2
+
+                # calculate integral of surface
+                f = sp.lambdify(x, f, "numpy")
+
+                tmp = calculate_riemann_integral(f, x1, x2, 10)
                 integral += tmp
 
             # append this integral to the array at result[function_id]
             # turn the float into string so it can be serialized into JSON
+            print(task, " result: ", integral)
             result[function_id].append(str(integral))
             data.close()
 
@@ -155,4 +164,5 @@ def calculate_all_user_movement_integrals():
 # uncomment this to calculate integral of all user movements
 # calculate_all_user_movement_integrals()
 
+# calculate_user_movement_integral("mnapravnik", 2)
 calculate_curvature_integral()
