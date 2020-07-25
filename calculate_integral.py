@@ -64,7 +64,7 @@ def calculate_curvature_integral():
                 print("Integral: ", integral_approx, "\n")
                 integrals_approx[test][str(function_id)] = str(integral_approx)
 
-    file = open("curvature_integrals.json", "w")
+    file = open("analysis/curvature_integrals.json", "w")
     file.write(json.dumps(integrals_approx, sort_keys=True, indent=4))
     file.close()
 
@@ -129,7 +129,7 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
 def calculate_all_user_movement_integrals():
     experiment_mode = [0, 1]
     path = "Results_backup"
-    file = open("movement_integrals.json", "w")
+    file = open("analysis/movement_integrals.json", "w")
 
     results_arr = {}
 
