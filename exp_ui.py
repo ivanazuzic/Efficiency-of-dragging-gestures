@@ -22,6 +22,8 @@ import time as time
 
 """ how many times a curve function can repeat"""
 NUM_OF_CYCLES = 2
+NUM_OF_DIFFICULY_CATEGORIES = 3
+NUM_OF_FUNCTIONS_PER_DIFF = 2
 
 class ExperimentWindow(tk.Frame):
     def __init__(
@@ -68,14 +70,7 @@ class ExperimentWindow(tk.Frame):
         self.fig = Figure(figsize=(9, 7), dpi=100)
         # A tk.DrawingArea.
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
-        self.x_range, self.graph = self.init_graph()
-        # the following line always produces
-        # 1000 equally spread points on the x_range
-        self.t = np.linspace(
-            self.x_range["start"],
-            self.x_range["end"],
-            1000
-        )
+        self.init_graph()
 
         self.fp = FunctionProvider()
         self.y = np.zeros(len(self.t))
@@ -159,6 +154,14 @@ class ExperimentWindow(tk.Frame):
                 "end": 5,
             }
             graph = self.fig.add_subplot(111)
+            # limiting the x axis range
+            # but only if coordinates are Cartesian
+            graph.set_xlim([
+                x_range["start"] - (x_range["end"] - x_range["start"]) / 6,
+                x_range["end"] + (x_range["end"] - x_range["start"]) / 6
+            ])
+            # limiting the y axis range
+            graph.set_ylim([-2.5, 2.5])
         else:
             # init polar graph
             x_range = {
@@ -167,8 +170,21 @@ class ExperimentWindow(tk.Frame):
                 "end": 360,
             }
             graph = self.fig.add_subplot(111, projection="polar")
+            # if the coordinates are polar,
+            # make the y (which is r in polar) larger
+            self.graph.set_ylim([-1.2, 1.8])
+            # this removes the radius (r)
+            self.graph.set_yticks([])
 
-        return x_range, graph
+        self.x_range = x_range
+        # the following line always produces
+        # 1000 equally spread points on the x_range
+        self.t = np.linspace(
+            self.x_range["start"],
+            self.x_range["end"],
+            1000
+        )
+        self.graph = graph
 
     # Toggles to full screen and back
     def toggle_fullscreen(self, event=None):
@@ -238,24 +254,10 @@ class ExperimentWindow(tk.Frame):
         self.time_start = None
         self.time_end = None
 
-        self.graph.cla()
-
-        if self.is_plot_cartestian()is True:
-            # limiting the x axis range
-            # but only if coordinates are Cartesian
-            self.graph.set_xlim([
-                self.x_range["start"] - (self.x_range["end"] - self.x_range["start"]) / 6,
-                self.x_range["end"] + (self.x_range["end"] - self.x_range["start"]) / 6
-            ])
-            # limiting the y axis range
-            self.graph.set_ylim([-2.5, 2.5])
-        else:
-            # if the coordinates are polar,
-            # make the y (which is r in polar) larger
-            self.graph.set_ylim([-1.2, 1.8])
-            # this removes the radius (r)
-            self.graph.set_yticks([])
-
+        # delete what is currently drawn
+        # we must delete the entire axes because their projection changes at runtime
+        self.fig.delaxes(self.graph)
+        self.init_graph()
 
         self.graph.plot(self.t, self.y)  # plot the generated t and y            
         self.canvas.draw()
@@ -317,7 +319,6 @@ class ExperimentWindow(tk.Frame):
             # quit the window
             self._quit()
             return
-
         self.init_plot(self.current_function_index)  # initalise the next plot
 
         # disable the "Next" button so that the user can't proceed without
@@ -418,8 +419,7 @@ class ExperimentWindow(tk.Frame):
         for i in range(NUM_OF_CYCLES):
             # generate 6 numbers to represent a single "pass"
             # through all the functions,
-            # there are  3*2=6 functions in total.
-            tmp = np.cumsum(np.ones(6)) - 1
+            tmp = np.cumsum(np.ones(NUM_OF_DIFFICULY_CATEGORIES * NUM_OF_FUNCTIONS_PER_DIFF)) - 1
             order = np.concatenate([order, tmp])
 
         # flag that checks if there are two equal consecutive elements in array
