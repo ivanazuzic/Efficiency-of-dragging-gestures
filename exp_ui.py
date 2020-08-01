@@ -20,6 +20,8 @@ from backing_up_locally import *
 import time as time
 # ~~~~~~~~~
 
+""" how many times a curve function can repeat"""
+NUM_OF_CYCLES = 2
 
 class ExperimentWindow(tk.Frame):
     def __init__(
@@ -413,7 +415,7 @@ class ExperimentWindow(tk.Frame):
         # ---------------- generating randomised order ---------------- #
         order = []
         # generate 3 passes through all functions
-        for i in range(3):
+        for i in range(NUM_OF_CYCLES):
             # generate 6 numbers to represent a single "pass"
             # through all the functions,
             # there are  3*2=6 functions in total.
