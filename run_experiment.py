@@ -72,7 +72,7 @@ class MainWindow(tk.Frame):
         experiment_mode_label.grid(row=3, column=0)
         experiment_mode = tk.IntVar(0)
         experiment_mode.set(0)
-        MODE = [0, 1, 2, 3]
+        MODE = [0, 1]  # only two modes
         mode_entry = tk.OptionMenu(root, experiment_mode, *MODE)
         mode_entry.grid(row=3, column=1)
 

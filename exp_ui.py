@@ -24,6 +24,10 @@ import time as time
 NUM_OF_CYCLES = 2
 NUM_OF_DIFFICULY_CATEGORIES = 3
 NUM_OF_FUNCTIONS_PER_DIFF = 2
+""" For experiment with index 0,
+test 0 and 2 are used. For experiment with index 1, tests 1 and 3 are used.
+0,1 - cartesian tests; 2,3 - polar tests """
+TESTS_IN_EXPERIMENT = [[0, 2], [1, 3]]
 
 class ExperimentWindow(tk.Frame):
     def __init__(
@@ -46,7 +50,7 @@ class ExperimentWindow(tk.Frame):
         self.device = device
         self.experiment_mode = experiment_mode
         # self.difficulty = difficulty
-        # self.order = order
+        # self.function_order = order
 
         self.x_drawn = []
         self.y_drawn = []
@@ -58,8 +62,7 @@ class ExperimentWindow(tk.Frame):
         # TODO: Uncomment this for the final experiment
         # self.sheet = connect()
         # ~~~~~~~~~
-        self.order = self.generate_random_function_order()
-        print(self.order)
+        self.function_order, self.projection_order = self.generate_random_function_order()
         # this is the index of the function we're currently plotting
         # starting from the first element in order[]
         self.current_function_index = 0
@@ -146,7 +149,7 @@ class ExperimentWindow(tk.Frame):
     def init_graph(self):
         x_range = {}
         graph = None
-        if self.is_plot_cartestian() is True:
+        if self.is_plot_cartestian():
             # init cartesian graph
             x_range = {
                 # start point and end point on which f(x) is defined
@@ -172,9 +175,9 @@ class ExperimentWindow(tk.Frame):
             graph = self.fig.add_subplot(111, projection="polar")
             # if the coordinates are polar,
             # make the y (which is r in polar) larger
-            self.graph.set_ylim([-1.2, 1.8])
+            graph.set_ylim([-1.2, 1.8])
             # this removes the radius (r)
-            self.graph.set_yticks([])
+            graph.set_yticks([])
 
         self.x_range = x_range
         # the following line always produces
@@ -221,9 +224,9 @@ class ExperimentWindow(tk.Frame):
         # delete the currently logged coordinates
         delete_file(
             self.participant_name,
-            self.experiment_mode,
+            self.get_current_function_test_mode(),
             self.device,
-            self.order,
+            self.function_order,
             self.current_function_index
         )
 
@@ -236,14 +239,19 @@ class ExperimentWindow(tk.Frame):
         self.time_start = None
         self.time_end = None
 
-        difficulty = int(self.order[plot_index] / 2)
-        task = int(self.order[plot_index] % 2)
+        # delete what is currently drawn
+        # we must delete the entire axes because their projection changes at runtime
+        self.fig.delaxes(self.graph)
+        self.init_graph()
+
+        difficulty = int(self.function_order[plot_index] / 2)
+        task = int(self.function_order[plot_index] % 2)
 
         self.y = self.fp.provide_function_y(
             difficulty,
             task,
             self.t,
-            self.experiment_mode
+            self.get_current_function_test_mode()
         )
 
         # this is for getting function ID
@@ -253,11 +261,6 @@ class ExperimentWindow(tk.Frame):
         # it took the user to follow the function trajectory
         self.time_start = None
         self.time_end = None
-
-        # delete what is currently drawn
-        # we must delete the entire axes because their projection changes at runtime
-        self.fig.delaxes(self.graph)
-        self.init_graph()
 
         self.graph.plot(self.t, self.y)  # plot the generated t and y            
         self.canvas.draw()
@@ -279,13 +282,13 @@ class ExperimentWindow(tk.Frame):
 
     def next_function(self):
         # error calculation
-        task = int(self.order[self.current_function_index] % 2)
-        difficulty = int(self.order[self.current_function_index] / 2)
+        task = int(self.function_order[self.current_function_index] % 2)
+        difficulty = int(self.function_order[self.current_function_index] / 2)
         actual_y = self.fp.provide_function_y(
             difficulty,
             task,
             self.x_drawn,
-            self.experiment_mode
+            self.get_current_function_test_mode()
         )
         error = 0
         for y1, y2 in zip(self.y_drawn, actual_y):
@@ -298,7 +301,7 @@ class ExperimentWindow(tk.Frame):
         # if self.participant_name != "":
         #     print("Logiram")
         #     epoch_time = int(time.time())
-        #     ID = self.order[self.current_function_index]
+        #     ID = self.function_order[self.current_function_index]
         #     difficulty = ID // 2
         #     self.sheet.append_row([
         #         self.participant_name,
@@ -313,7 +316,7 @@ class ExperimentWindow(tk.Frame):
         # ~~~~~~~~~
 
         self.current_function_index = (self.current_function_index + 1)
-        if(self.current_function_index >= len(self.order)):
+        if(self.current_function_index >= len(self.function_order)):
             # if all of the functions have been tested and
             # there's nothing else to plot,
             # quit the window
@@ -345,12 +348,12 @@ class ExperimentWindow(tk.Frame):
                 self.y_drawn.append(self.cursor_coord[0]["y"])
 
                 # Log a coordinate to a local file
-                # print(self.participant_name, self.order[self.current_function_index], self.cursor_coord[0]["x"], self.cursor_coord[0]["y"])
+                # print(self.participant_name, self.function_order[self.current_function_index], self.cursor_coord[0]["x"], self.cursor_coord[0]["y"])
                 write_to_file(
                     self.participant_name,
-                    self.experiment_mode,
+                    self.get_current_function_test_mode(),
                     self.device,
-                    self.order,
+                    self.function_order,
                     self.current_function_index,
                     self.cursor_coord[0]["x"],
                     self.cursor_coord[0]["y"]
@@ -415,12 +418,14 @@ class ExperimentWindow(tk.Frame):
     def generate_random_function_order(self):
         # ---------------- generating randomised order ---------------- #
         order = []
-        # generate 3 passes through all functions
-        for i in range(NUM_OF_CYCLES):
-            # generate 6 numbers to represent a single "pass"
-            # through all the functions,
-            tmp = np.cumsum(np.ones(NUM_OF_DIFFICULY_CATEGORIES * NUM_OF_FUNCTIONS_PER_DIFF)) - 1
-            order = np.concatenate([order, tmp])
+        # generate multiple passes through all functions
+        for cycle in range(NUM_OF_CYCLES):
+            # and each projection
+            for test in TESTS_IN_EXPERIMENT[self.experiment_mode]:
+                # generate 6 numbers to represent a single "pass"
+                # through all the functions in specified projection,
+                for function in range(NUM_OF_FUNCTIONS_PER_DIFF * NUM_OF_DIFFICULY_CATEGORIES):
+                    order.append([function, test])
 
         # flag that checks if there are two equal consecutive elements in array
         two_equal = True
@@ -432,10 +437,14 @@ class ExperimentWindow(tk.Frame):
             two_equal = False
             # check again if there are two equal consecutive elements
             for i in range(1, len(order)):
-                if order[i - 1] == order[i]:
+                if order[i - 1][0] == order[i][0]:
                     two_equal = True
-        # ---------------- !generating randomised order ---------------- #
-        return order
+        # # ---------------- !generating randomised order ---------------- #
+        order = np.array(order)
+        return order[:, 0], order[:, 1]
 
     def is_plot_cartestian(self):
-        return is_cartesian(self.experiment_mode)
+        return is_cartesian(self.get_current_function_test_mode())
+
+    def get_current_function_test_mode(self): 
+        return self.projection_order[self.current_function_index]
