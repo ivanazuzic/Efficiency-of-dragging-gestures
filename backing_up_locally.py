@@ -13,11 +13,11 @@ def create_folder(name, experiment_mode, device):
         pass
 
 
-def write_to_file(name, experiment_mode, device, order, function_id, x, y):
+def write_to_file(name, experiment_mode, device, function_order, projection_order, function_idx, x, y):
     if(name == ""):
         return
 
-    filename = "Results_backup"+str(experiment_mode)+"/" + name + '/' + device + '/' + str(int(order[function_id])) + '_' + str(function_id) + '.txt'
+    filename = get_filename(name, experiment_mode, device, function_order, projection_order, function_idx)
 
     with open(
         filename,
@@ -26,7 +26,15 @@ def write_to_file(name, experiment_mode, device, order, function_id, x, y):
         file.write(str(x) + ' ' + str(y) + '\n')
 
 
-def delete_file(name, experiment_mode, device, order, function_id):
-    filename = "Results_backup"+str(experiment_mode)+"/" + name + '/' + device + '/' + str(int(order[function_id])) + '_' + str(function_id) + '.txt'
+def delete_file(name, experiment_mode, device, function_order, projection_order, function_idx):
+    filename = get_filename(name, experiment_mode, device, function_order, projection_order, function_idx)
     if os.path.exists(filename):
         os.remove(filename)
+
+def get_filename(name, experiment_mode, device, function_order, projection_order, function_idx):
+    return (
+        "Results_backup"+str(experiment_mode)+"/" + name + '/' + device + 
+        '/id-' + str(int(function_order[function_idx])) + 
+        '_proj-' + str(int(projection_order[function_idx])) + 
+        '_order-' + str(function_idx) + '.txt'
+    )

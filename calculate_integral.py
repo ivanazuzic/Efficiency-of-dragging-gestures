@@ -73,7 +73,7 @@ def calculate_riemann_integral(f, x0, x1, numpoints):
     return integral_approx
 
 
-def calculate_user_movement_integral(user, experiment_mode=2, device="Mouse"):
+def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
     foldername = (
         "Results_backup" +
         str(experiment_mode) +
@@ -87,12 +87,13 @@ def calculate_user_movement_integral(user, experiment_mode=2, device="Mouse"):
         tasks = sorted(os.listdir(foldername))
         for task in range(len(tasks)):
             # this will produce a dictionary with all values being empty lists.
-            # this dictionary's keys will are function_id's
-            function_id = (tasks[task][0])
+            # this dictionary's keys are function_id's
+            function_id = (tasks[task][3])
             result[function_id] = []
 
         for task in range(len(tasks)):
-            function_id = str(tasks[task][0])
+            projection = int(tasks[task][10])
+            function_id = str(tasks[task][3])
 
             # for each task, get all the coordinates our user drew
             data = open(foldername + "/" + tasks[task], "r")
@@ -113,7 +114,7 @@ def calculate_user_movement_integral(user, experiment_mode=2, device="Mouse"):
 
                 # get the equation of the line on which point1 and point2 lay
                 f = (y2 - y1) / (x2 - x1) * (x - x1) + y1
-                if(is_cartesian(task) is False):
+                if(is_cartesian(projection) is False):
                     f = 0.5 * f**2
 
                 # calculate integral of surface
@@ -124,7 +125,7 @@ def calculate_user_movement_integral(user, experiment_mode=2, device="Mouse"):
 
             # append this integral to the array at result[function_id]
             # turn the float into string so it can be serialized into JSON
-            print(task, " result: ", integral)
+            print(tasks[task], " result: ", integral)
             result[function_id].append(str(integral))
             data.close()
 
@@ -164,5 +165,5 @@ def calculate_all_user_movement_integrals():
 # uncomment this to calculate integral of all user movements
 # calculate_all_user_movement_integrals()
 
-# calculate_user_movement_integral("mnapravnik", 2)
-calculate_curvature_integral()
+calculate_user_movement_integral("mnapravnik", 0)
+# calculate_curvature_integral()

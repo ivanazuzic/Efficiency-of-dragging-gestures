@@ -227,6 +227,7 @@ class ExperimentWindow(tk.Frame):
             self.get_current_function_test_mode(),
             self.device,
             self.function_order,
+            self.projection_order,
             self.current_function_index
         )
 
@@ -351,9 +352,10 @@ class ExperimentWindow(tk.Frame):
                 # print(self.participant_name, self.function_order[self.current_function_index], self.cursor_coord[0]["x"], self.cursor_coord[0]["y"])
                 write_to_file(
                     self.participant_name,
-                    self.get_current_function_test_mode(),
+                    self.experiment_mode,
                     self.device,
                     self.function_order,
+                    self.projection_order,
                     self.current_function_index,
                     self.cursor_coord[0]["x"],
                     self.cursor_coord[0]["y"]
