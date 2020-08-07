@@ -5,5 +5,5 @@ Results_backup0/
 Results_backup1/
 movement_integrals.json
 # ignore pycache
-__pycache__/
+__pycache__/*
 *.pyc

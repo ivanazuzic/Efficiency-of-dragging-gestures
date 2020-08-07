@@ -15,7 +15,7 @@ from backing_up_locally import *
 #===THIS IS COMMENTED BECAUSE THE CONNECTION DATA IS IN AN UNCOMMITTED FILE===
 # TODO: Uncomment this for the final experiment
 # import to connect to Google Sheets API
-# from connect import connect
+from connect import connect
 #import to get the current timestamp
 import time as time
 # ~~~~~~~~~
@@ -60,7 +60,7 @@ class ExperimentWindow(tk.Frame):
         # connect() uses Google Sheets API to connect to 
         # the spreadsheet that we'll write to
         # TODO: Uncomment this for the final experiment
-        # self.sheet = connect()
+        self.sheet = connect()
         # ~~~~~~~~~
         self.function_order, self.projection_order = self.generate_random_function_order()
         # this is the index of the function we're currently plotting
@@ -299,21 +299,23 @@ class ExperimentWindow(tk.Frame):
 
         # ~~~~~~~~~
         # TODO: Uncomment this for the final experiment
-        # if self.participant_name != "":
-        #     print("Logiram")
-        #     epoch_time = int(time.time())
-        #     ID = self.function_order[self.current_function_index]
-        #     difficulty = ID // 2
-        #     self.sheet.append_row([
-        #         self.participant_name,
-        #         self.age,
-        #         self.device,
-        #         epoch_time,
-        #         ID,
-        #         difficulty,
-        #         self.drawing_time,
-        #         error,
-        #         self.experiment_mode])
+        if self.participant_name != "":
+            print("Logiram")
+            epoch_time = int(time.time())
+            ID = self.function_order[self.current_function_index]
+            difficulty = ID // 2
+            self.sheet.append_row([
+                self.participant_name,
+                self.age,
+                self.device,
+                str(self.experiment_mode),
+                str(epoch_time),
+                str(ID),
+                str(difficulty),
+                "Cartesian" if self.is_plot_cartestian() else "Polar",
+                str(self.drawing_time),
+                str(error),
+            ])
         # ~~~~~~~~~
 
         self.current_function_index = (self.current_function_index + 1)
