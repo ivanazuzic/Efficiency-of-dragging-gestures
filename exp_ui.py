@@ -175,7 +175,7 @@ class ExperimentWindow(tk.Frame):
             graph = self.fig.add_subplot(111, projection="polar")
             # if the coordinates are polar,
             # make the y (which is r in polar) larger
-            graph.set_ylim([-1.2, 1.8])
+            graph.set_ylim([0, 1.8])
             # this removes the radius (r)
             graph.set_yticks([])
 

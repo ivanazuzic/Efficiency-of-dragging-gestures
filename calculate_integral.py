@@ -29,8 +29,6 @@ def calculate_curvature_integral():
                     # if coordinates are polar, then we sum up phi values from 0 to 360
                     x0 = 0
                     x1 = 2 * math.pi
-                    # and our kappa function is 0.5 * kappa ** 2 (because of the polar coordinate integration rules)
-                    kappa = 0.5 * kappa ** 2
                 else:
                     # if coordinates are cartesian, we sum up from 0 do 5 (this is where our functions are defined)
                     x0 = 0.00  # begin point
