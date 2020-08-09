@@ -28,7 +28,7 @@ def calculate_curvature_integral():
                 if(is_cartesian(test) is False):
                     # if coordinates are polar, then we sum up phi values from 0 to 360
                     x0 = 0
-                    x1 = math.pi
+                    x1 = 2 * math.pi
                     # and our kappa function is 0.5 * kappa ** 2 (because of the polar coordinate integration rules)
                     kappa = 0.5 * kappa ** 2
                 else:
@@ -165,5 +165,5 @@ def calculate_all_user_movement_integrals():
 # uncomment this to calculate integral of all user movements
 # calculate_all_user_movement_integrals()
 
-calculate_user_movement_integral("mnapravnik", 0)
-# calculate_curvature_integral()
+# calculate_user_movement_integral("mnapravnik", 0)
+calculate_curvature_integral()

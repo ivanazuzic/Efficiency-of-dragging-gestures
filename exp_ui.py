@@ -4,7 +4,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 # Implement the default Matplotlib key bindings.
 from matplotlib.figure import Figure
 
-import random
+import random, math
 import numpy as np
 import time
 
@@ -170,7 +170,7 @@ class ExperimentWindow(tk.Frame):
             x_range = {
                 # start point and end point on which f(x) is defined
                 "start": 0,
-                "end": 360,
+                "end": 2 * math.pi,
             }
             graph = self.fig.add_subplot(111, projection="polar")
             # if the coordinates are polar,
@@ -185,7 +185,7 @@ class ExperimentWindow(tk.Frame):
         self.t = np.linspace(
             self.x_range["start"],
             self.x_range["end"],
-            1000
+            10000
         )
         self.graph = graph
 
