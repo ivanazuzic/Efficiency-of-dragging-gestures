@@ -300,13 +300,13 @@ class ExperimentWindow(tk.Frame):
                 self.participant_name,
                 self.age,
                 self.device,
-                str(self.experiment_mode),
-                str(epoch_time),
-                str(ID),
-                str(difficulty),
+                float(self.experiment_mode),
+                float(epoch_time),
+                float(ID),
+                float(difficulty),
                 "Cartesian" if self.is_plot_cartestian() else "Polar",
-                str(self.drawing_time),
-                str(error),
+                float(self.drawing_time),
+                float(error),
             ])
         # ~~~~~~~~~
 

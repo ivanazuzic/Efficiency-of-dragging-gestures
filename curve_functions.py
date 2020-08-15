@@ -51,7 +51,7 @@ class FunctionProvider:
             kappa = sp.sqrt((fderder)**2) / ((1 + (fder)**2)**(3 / 2)) + 1
         else:
             # kappa for polar coordinates
-            kappa = abs(f**2 + 2 * fder**2 - f * fderder) / ((fder**2 + f**2) ** (3 / 2))
+            kappa = abs(f**2 + 2 * fder**2 - f * fderder) / ((fder**2 + f**2) ** (3 / 2)) + 1
         return kappa
 
     def provide_function_y(self, difficulty, task, x, test_index):
