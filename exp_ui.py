@@ -163,17 +163,14 @@ class ExperimentWindow(tk.Frame):
                 x_range["start"] - (x_range["end"] - x_range["start"]) / 6,
                 x_range["end"] + (x_range["end"] - x_range["start"]) / 6
             ])
-            # limiting the y axis range
-            graph.set_ylim([-2.5, 2.5])
         else:
             # init polar graph
             graph = self.fig.add_subplot(111, projection="polar")
-            # if the coordinates are polar,
-            # make the y (which is r in polar) larger
-            graph.set_ylim([0, 1.8])
             # this removes the radius (r)
             graph.set_yticks([])
 
+        # limiting the y axis range
+        graph.set_ylim([0, 2.5])
         self.x_range = x_range
         # the following line always produces
         # 1000 equally spread points on the x_range
