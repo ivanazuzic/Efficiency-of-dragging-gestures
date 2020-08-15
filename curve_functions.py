@@ -70,127 +70,127 @@ class FunctionProvider:
     # for the given values x.
 
     # Difficulty: EASY
-    # Linear function
+    ##### Cartesian Coordinates #####    
     def function_curve_d1_t1(self):
-        f = 0.5 * (self.x - 2.5)
+        f = 0.2 * (self.x + 1.5)
         return f
 
-    # Exponential function
+    ##### Cartesian Coordinates #####    
     def function_curve_d1_t2(self):
-        f = sp.exp(self.x) / 2**6 - 1
+        f = (sp.exp(-self.x + 5) + sp.exp(self.x)) / 2**8 + 0.2
         return f
 
-    # Square root function
+    ##### Cartesian Coordinates #####    
     def function_curve_d1_t3(self):
-        f = sp.sqrt(self.x) - 0.5
+        f = sp.sqrt(self.x + 0.001) / 1.2 + 0.2
         return f
 
-    # Linear function
+    ##### Cartesian Coordinates #####        
     def function_curve_d1_t4(self):
-        f = -0.5 * (self.x - 2.5)
+        f = -0.2 * (self.x) + 1.5
         return f
 
     ##### Polar Coordinates #####
     def function_curve_d1_t5(self):
-        f = sp.cos(3 * self.x)
+        f = self.make_sin_rosette(1.8, 0.3, 2)
         return f
 
     ##### Polar Coordinates #####
     def function_curve_d1_t6(self):
-        f = sp.cos(3 * self.x)
+        f = self.make_spiral(1.6, 0.1)
         return f
 
     ##### Polar Coordinates #####
     def function_curve_d1_t7(self):
-        f = sp.sin(3 * self.x)
+        f = self.make_spiral(1.8, 0)
         return f
     
     ##### Polar Coordinates #####
     def function_curve_d1_t8(self):
-        f = sp.sin(3 * self.x)
+        f = self.make_sin_rosette(1.75, -0.1, 3)
         return f
 
     # Difficulty: MEDIUM
 
-    # Sine
+    ##### Cartesian Coordinates #####    
     def function_curve_d2_t1(self):
-        f = sp.sin(self.x * 2)
+        f = sp.sin(2.5 * self.x) * 0.75 + 1.25
         return f
 
-    # Sine Gaussian
+    ##### Cartesian Coordinates #####    
     def function_curve_d2_t2(self):
-        f = self.make_sine_gaussian(2, -2, 1, 3, 50)
+        f = self.make_sine_gaussian(-1, -3, 1.7, 5, 5) + 1.25
         return f
 
-    # Sine Gaussian
+    ##### Cartesian Coordinates #####    
     def function_curve_d2_t3(self):
-        f = self.make_sine_gaussian(-1.5, -2, 0.8, 5, 30)
+        f = self.make_sine_gaussian(1, -2, 2, 4, 50) + 1.25
         return f
 
-    # High degree polinome
+    ##### Cartesian Coordinates #####    
     def function_curve_d2_t4(self):
-        f = (self.x - 0.5) * (self.x - 1.7) * (self.x - 3.6) * (self.x - 4.6) / 7 - 1
+        f = self.make_fourier(0.25, 0.6, 2, -0.3)
         return f
 
     ##### Polar Coordinates #####
     def function_curve_d2_t5(self):
-        f = sp.cos(self.x)
+        f = self.make_sin_rosette(1.2, -0.75, 2)
         return f
 
     ##### Polar Coordinates #####
     def function_curve_d2_t6(self):
-        f = sp.cos(self.x)
+        f = self.make_bean(1.4, -0.7, 1.5, 3.3)
         return f
 
     ##### Polar Coordinates #####
     def function_curve_d2_t7(self):
-        f = sp.sin(self.x)
+        f = self.make_bean(1.3, 0.7, 3, 1)
         return f
     
     ##### Polar Coordinates #####
     def function_curve_d2_t8(self):
-        f = sp.sin(self.x)
+        f = self.make_sin_rosette(1.2, -0.75, 2.3)
         return f
 
     # Difficulty: HARD
-    # Fourier
+    ##### Cartesian Coordinates #####    
     def function_curve_d3_t1(self):
-        f = self.make_fourier(0.5, 2, 0.2)
+        f = self.make_fourier(0.29, 1.5, 0.15, 0.3)
         return f
 
-    # Sine Gaussian
+    ##### Cartesian Coordinates #####    
     def function_curve_d3_t2(self):
-        f = self.make_sine_gaussian(2, -2.5, 3, 5, 2.5)
+        f = self.make_sine_gaussian(1, -2.5, 3, 6, 2.5) + 1.25
         return f
 
-    # Sinc
+    ##### Cartesian Coordinates #####    
     def function_curve_d3_t3(self):
-        f = self.make_sinc(17, 5, 6.1)
+        f = self.make_sinc(12, 6, 8.3) + 1.25
         return f
 
-    # Sine Gaussian
+    ##### Cartesian Coordinates #####    
     def function_curve_d3_t4(self):
-        f = self.make_sine_gaussian(2, -1, 8, 5, 2.5)
+        f = self.make_fourier(-0.17, -0.5, -1.5, 0.35)
         return f    
 
     ##### Polar Coordinates #####
     def function_curve_d3_t5(self):
-        f = sp.cos(self.x) + sp.sin(self.x)
+        f = self.make_sin_rosette(1.3, -0.6, 6.1)
         return f
 
     ##### Polar Coordinates #####
     def function_curve_d3_t6(self):
-        f = sp.cos(self.x) + sp.sin(self.x)
+        f = self.make_bean(1.4, -0.7, 5.1, 3)
         return f
 
     ##### Polar Coordinates #####
     def function_curve_d3_t7(self):
-        f = sp.sin(self.x) + sp.sin(self.x)
+        f = self.make_sin_rosette(1.3, -0.7, 5.1)
         return f
     
     ##### Polar Coordinates #####
     def function_curve_d3_t8(self):
-        f = sp.sin(self.x) + sp.sin(self.x)
+        f = self.make_bean(1.4, -0.75, 3.1, -5)
         return f
 
     def calculate_y(self, function, x_arr):
@@ -210,8 +210,17 @@ class FunctionProvider:
     def make_sinc(self, a, b, c):
         return a*sp.sin(b*(self.x-c)) / (b*(self.x-c))
 
-    def make_fourier(self, a, b, c):
-        return sp.sin(self.x /a) + sp.sin(self.x / b) + sp.cos(self.x / c) - 1
+    def make_fourier(self, a, b, c, d = 1):
+        return (sp.sin(self.x /a) + sp.sin(self.x / b) + sp.cos(self.x / c)) * d + 1.25  
+
+    def make_bean(self, a, b, c, d):
+        return a + b * sp.sin(c * self.x) * sp.cos(d * self.x)
+
+    def make_sin_rosette(self, a, b, c):
+        return a + b * sp.sin(c * self.x)
+
+    def make_spiral(self, a, b):
+        return a + b * self.x
 
 
 def is_cartesian(test_index):
