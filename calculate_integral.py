@@ -25,14 +25,9 @@ def calculate_curvature_integral():
                 # by summing up y values for each x0 in such a way that
                 # the distance between two x0 points is infinitely small
 
-                if(is_cartesian(test) is False):
-                    # if coordinates are polar, then we sum up phi values from 0 to 360
-                    x0 = 0
-                    x1 = 2 * math.pi
-                else:
-                    # if coordinates are cartesian, we sum up from 0 do 5 (this is where our functions are defined)
-                    x0 = 0.00  # begin point
-                    x1 = 5.00  # end point
+                x0 = 0
+                x1 = 2 * math.pi
+
                 print(kappa)
                 kappa = sp.lambdify(x, kappa, "numpy")
 

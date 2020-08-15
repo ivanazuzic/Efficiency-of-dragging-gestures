@@ -149,13 +149,13 @@ class ExperimentWindow(tk.Frame):
     def init_graph(self):
         x_range = {}
         graph = None
+        x_range = {
+            # start point and end point on which f(x) is defined
+            "start": 0,
+            "end": 2 * math.pi,
+        }
         if self.is_plot_cartestian():
             # init cartesian graph
-            x_range = {
-                # start point and end point on which f(x) is defined
-                "start": 0,
-                "end": 5,
-            }
             graph = self.fig.add_subplot(111)
             # limiting the x axis range
             # but only if coordinates are Cartesian
@@ -167,11 +167,6 @@ class ExperimentWindow(tk.Frame):
             graph.set_ylim([-2.5, 2.5])
         else:
             # init polar graph
-            x_range = {
-                # start point and end point on which f(x) is defined
-                "start": 0,
-                "end": 2 * math.pi,
-            }
             graph = self.fig.add_subplot(111, projection="polar")
             # if the coordinates are polar,
             # make the y (which is r in polar) larger
