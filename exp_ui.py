@@ -70,7 +70,7 @@ class ExperimentWindow(tk.Frame):
         self.window = tk.Toplevel()
         self.window.title("Task window")
 
-        self.fig = Figure(figsize=(9, 7), dpi=100)
+        self.fig = Figure(figsize=(12, 9), dpi=100)
         # A tk.DrawingArea.
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
         self.init_graph()
@@ -136,8 +136,8 @@ class ExperimentWindow(tk.Frame):
         # self.window.after(self.SAMPLE_TIMEOUT, self.task)
 
         # Setting the windows size and initial position
-        width = 1000
-        height = 700
+        width = 1600
+        height = 1000
         self.window.geometry('{}x{}+{}+{}'.format(width, height, 10, 10))
 
         # Setting the screen state to be toggleable
