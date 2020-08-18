@@ -130,8 +130,9 @@ class ExperimentWindow(tk.Frame):
 
         self.cur_coord_stringvar = tk.StringVar()
         self.cur_coord_stringvar.set("")
-        self.cur_coord_label = tk.Label(master=self.window, textvariable=self.cur_coord_stringvar)
-        self.cur_coord_label.grid(row=3, column=1)
+        # uncomment this to display current cursor coords, below 'Quit' button
+        # self.cur_coord_label = tk.Label(master=self.window, textvariable=self.cur_coord_stringvar)
+        # self.cur_coord_label.grid(row=3, column=1)
 
         # self.window.after(self.SAMPLE_TIMEOUT, self.task)
 
@@ -298,7 +299,7 @@ class ExperimentWindow(tk.Frame):
             difficulty = ID // 2
             self.sheet.append_row([
                 self.participant_name,
-                self.age,
+                float(self.age),
                 self.device,
                 float(self.experiment_mode),
                 float(epoch_time),
