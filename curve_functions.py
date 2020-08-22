@@ -64,6 +64,16 @@ class FunctionProvider:
 
         return self.calculate_y(self.function_array[test_index][difficulty][task], x)
 
+    def provide_function(self, difficulty, task, test_index):
+        if(
+            test_index > len(self.function_array) or
+            difficulty > len(self.function_array[test_index]) or
+            task > len(self.function_array[test_index][difficulty])
+        ):
+            return None
+
+        return self.function_array[test_index][difficulty][task]()
+
     # ======= ALL THE FUNCTIONS =======
     # These are the functions we're plotting.
     # They return the values array y=f(x)
@@ -221,7 +231,6 @@ class FunctionProvider:
 
     def make_spiral(self, a, b):
         return a + b * self.x
-
 
 def is_cartesian(test_index):
     return test_index == 0 or test_index == 1

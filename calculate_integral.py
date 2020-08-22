@@ -7,7 +7,7 @@ import math
 
 fp = FunctionProvider()
 x = sp.Symbol("x")
-
+epsilon = 0.000001
 
 def calculate_curvature_integral():
     integrals_approx = {}
@@ -45,7 +45,7 @@ def calculate_riemann_integral(f, x0, x1, numpoints):
     # distance between two points (will be very small)
     delta = (x1 - x0) / numpoints
     i = 0
-    while x0 < x1:
+    for i in range(numpoints):
         # put integral_approx calculation inside try-except
         # in case we get "division by zero" exception.
         if(i % (numpoints / 10) == 0):
@@ -91,9 +91,13 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
             # for each task, get all the coordinates our user drew
             data = open(foldername + "/" + tasks[task], "r")
             coordinates = data.readlines()
+            print(tasks[task], " ---> is being processed, coordinate number:", len(coordinates))
 
             integral = 0
             for i in range(1, len(coordinates)):
+                if(i % (len(coordinates) / 10) == 0):
+                    print(i / len(coordinates) * 100, "%")
+
                 coordinate1 = coordinates[i - 1].split()
                 coordinate2 = coordinates[i].split()
                 x1 = float(coordinate1[0])  # x coordinate of first point
@@ -101,24 +105,48 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
                 x2 = float(coordinate2[0])  # x coordinate of second point
                 y2 = float(coordinate2[1])
 
-                # if values have the same x, just continue
-                if(x2 == x1):
+                tmp_x1, tmp_y1 = x1, y1
+                tmp_x2, tmp_y2 = x2, y2
+
+                if(abs(x2 - x1) < epsilon):
                     continue
 
+                if(x1 - x2 > 2 * math.pi - 0.5 and is_cartesian(projection) is False):
+                    x1 -= 2 * math.pi
+
+                k = 0
+                try:
+                    k = (y2 - y1) / (x2 - x1)
+                except:
+                    # print(x1, y1, ', ', x2, y2)
+                    continue
+
+                f = k * (x - x1) + y1
                 # get the equation of the line on which point1 and point2 lay
-                f = (y2 - y1) / (x2 - x1) * (x - x1) + y1
                 if(is_cartesian(projection) is False):
+                    f = (y1 + y2) / 2
                     f = 0.5 * f**2
 
-                # calculate integral of surface
                 f = sp.lambdify(x, f, "numpy")
 
-                tmp = calculate_riemann_integral(f, x1, x2, 10)
+                # calculate integral of surface
+                tmp = calculate_riemann_integral(f, x1, x2, 100)
+                if(tmp > 1):
+                    print(i, ": Integral: ", tmp, ' :: ', tmp_x1, tmp_y1, '   ', tmp_x2, tmp_y2)
                 integral += tmp
 
             # append this integral to the array at result[function_id]
             # turn the float into string so it can be serialized into JSON
             print(tasks[task], " result: ", integral)
+            difficulty = int(int(function_id) / 2)
+            task = int(function_id) % 2
+            print("This was function with difficulty:", difficulty, "and task:", task)
+            real_func = fp.provide_function(difficulty, task, projection)
+            real_func = 0.5 * real_func ** 2
+            print(real_func)
+            real_func = sp.lambdify(x, real_func)
+            print("Actual surface", calculate_riemann_integral(real_func, 0, 2 * math.pi, 100))
+
             result[function_id].append(str(integral))
             data.close()
 
@@ -158,5 +186,5 @@ def calculate_all_user_movement_integrals():
 # uncomment this to calculate integral of all user movements
 # calculate_all_user_movement_integrals()
 
-# calculate_user_movement_integral("mnapravnik", 0)
-calculate_curvature_integral()
+calculate_user_movement_integral("mnapravnik", 0)
+# calculate_curvature_integral()
