@@ -95,9 +95,6 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
 
             integral = 0
             for i in range(1, len(coordinates)):
-                if(i % (len(coordinates) / 10) == 0):
-                    print(i / len(coordinates) * 100, "%")
-
                 coordinate1 = coordinates[i - 1].split()
                 coordinate2 = coordinates[i].split()
                 x1 = float(coordinate1[0])  # x coordinate of first point
@@ -108,31 +105,45 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
                 tmp_x1, tmp_y1 = x1, y1
                 tmp_x2, tmp_y2 = x2, y2
 
+                if(is_cartesian(projection) is False):
+                    if(abs(x1 - x2) > 2 * math.pi - 1):
+                        # what if points are at 2pi - 0 interval (crossing)
+                        if(x1 > x2):
+                            x1 = x1 - 2 * math.pi
+                            tmp_x1 = x1
+                        else:
+                            x2 = x2 - 2 * math.pi
+                            tmp_x2 = x2
+
+                    x1, y1 = (y1 * np.cos(x1), y1 * np.sin(x1))
+                    x2, y2 = (y2 * np.cos(x2), y2 * np.sin(x2))
+
                 if(abs(x2 - x1) < epsilon):
                     continue
 
-                if(x1 - x2 > 2 * math.pi - 0.5 and is_cartesian(projection) is False):
-                    x1 -= 2 * math.pi
-
+                # get the equation of the line on which point1 and point2 lay
                 k = 0
                 try:
                     k = (y2 - y1) / (x2 - x1)
                 except:
-                    # print(x1, y1, ', ', x2, y2)
                     continue
 
                 f = k * (x - x1) + y1
-                # get the equation of the line on which point1 and point2 lay
                 if(is_cartesian(projection) is False):
-                    f = (y1 + y2) / 2
+                    f = sp.lambdify(x, f, "numpy")
+                    f = f(0) / (sp.sin(x) - (f(1) - f(0)) * sp.cos(x))
                     f = 0.5 * f**2
+
+                    # restore cartesian coordinates back to polar
+                    x1, y1 = tmp_x1, tmp_y1
+                    x2, y2 = tmp_x2, tmp_y2
 
                 f = sp.lambdify(x, f, "numpy")
 
                 # calculate integral of surface
                 tmp = calculate_riemann_integral(f, x1, x2, 100)
-                if(tmp > 1):
-                    print(i, ": Integral: ", tmp, ' :: ', tmp_x1, tmp_y1, '   ', tmp_x2, tmp_y2)
+                # if(tmp > 1):
+                #     print(i, ": Integral: ", tmp, ' :: (', tmp_x1, ',', tmp_y1, ',   ', tmp_x2,',', tmp_y2, ")")
                 integral += tmp
 
             # append this integral to the array at result[function_id]
@@ -140,10 +151,8 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
             print(tasks[task], " result: ", integral)
             difficulty = int(int(function_id) / 2)
             task = int(function_id) % 2
-            print("This was function with difficulty:", difficulty, "and task:", task)
             real_func = fp.provide_function(difficulty, task, projection)
             real_func = 0.5 * real_func ** 2
-            print(real_func)
             real_func = sp.lambdify(x, real_func)
             print("Actual surface", calculate_riemann_integral(real_func, 0, 2 * math.pi, 100))
 
@@ -186,5 +195,5 @@ def calculate_all_user_movement_integrals():
 # uncomment this to calculate integral of all user movements
 # calculate_all_user_movement_integrals()
 
-calculate_user_movement_integral("mnapravnik", 0)
+calculate_user_movement_integral("galebftw", 0)
 # calculate_curvature_integral()
