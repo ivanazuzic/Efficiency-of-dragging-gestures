@@ -74,6 +74,9 @@ class FunctionProvider:
 
         return self.function_array[test_index][difficulty][task]()
 
+    def get_all_experiment_modes(self):
+        return [0, 1, 2, 3]
+
     # ======= ALL THE FUNCTIONS =======
     # These are the functions we're plotting.
     # They return the values array y=f(x)

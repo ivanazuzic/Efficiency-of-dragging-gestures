@@ -82,7 +82,13 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
             # this will produce a dictionary with all values being empty lists.
             # this dictionary's keys are function_id's
             function_id = (tasks[task][3])
-            result[function_id] = []
+            result[function_id] = {}
+        
+        for task in range(len(tasks)):
+            # add projection to dictionary
+            projection = int(tasks[task][10])
+            function_id = (tasks[task][3])
+            result[function_id][projection] = {'integral': [], 'error': []}
 
         for task in range(len(tasks)):
             projection = int(tasks[task][10])
@@ -94,6 +100,15 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
             print(tasks[task], " ---> is being processed, coordinate number:", len(coordinates))
 
             integral = 0
+            # at each segment, subtract surfaces of the real function and user movement
+            error_integral = 0
+    
+            difficulty = int(int(function_id) / 2)
+            test = int(function_id) % 2
+            real_func = fp.provide_function(difficulty, test, projection)
+            real_func = 0.5 * real_func ** 2
+            real_func = sp.lambdify(x, real_func)
+
             for i in range(1, len(coordinates)):
                 coordinate1 = coordinates[i - 1].split()
                 coordinate2 = coordinates[i].split()
@@ -140,23 +155,23 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
 
                 f = sp.lambdify(x, f, "numpy")
 
-                # calculate integral of surface
+                # calculate integral of user plotted line
                 tmp = calculate_riemann_integral(f, x1, x2, 100)
+                # calculate integral of the real function at the same segment
+                tmp2 = calculate_riemann_integral(real_func, x1, x2, 100)
+                error_integral += abs(tmp - tmp2)
+
                 # if(tmp > 1):
                 #     print(i, ": Integral: ", tmp, ' :: (', tmp_x1, ',', tmp_y1, ',   ', tmp_x2,',', tmp_y2, ")")
                 integral += tmp
 
             # append this integral to the array at result[function_id]
             # turn the float into string so it can be serialized into JSON
-            print(tasks[task], " result: ", integral)
-            difficulty = int(int(function_id) / 2)
-            task = int(function_id) % 2
-            real_func = fp.provide_function(difficulty, task, projection)
-            real_func = 0.5 * real_func ** 2
-            real_func = sp.lambdify(x, real_func)
-            print("Actual surface", calculate_riemann_integral(real_func, 0, 2 * math.pi, 100))
+            # print(tasks[task], " result: ", integral, "error:", error_integral)
+            # print("Actual surface", calculate_riemann_integral(real_func, 0, 2 * math.pi, 100)) 
 
-            result[function_id].append(str(integral))
+            result[function_id][projection]["integral"].append(str(integral))
+            result[function_id][projection]["error"].append(str(error_integral))
             data.close()
 
     except Exception as e:
