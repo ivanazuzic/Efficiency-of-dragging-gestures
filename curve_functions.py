@@ -34,16 +34,9 @@ class FunctionProvider:
         ]
 
     def get_function_curvature(self, difficulty, task, test_index):
-        # gets index of difficulty for the function
         kappa = None
-        if(
-            test_index > len(self.function_array) or
-            difficulty > len(self.function_array[test_index]) or
-            task > len(self.function_array[test_index][difficulty])
-        ):
-            return None
 
-        f = self.function_array[test_index][difficulty][task]()
+        f = self.provide_function(difficulty, task, test_index)
         fder = f.diff(self.x)
         fderder = fder.diff(self.x)
 
@@ -53,6 +46,17 @@ class FunctionProvider:
             # kappa for polar coordinates
             kappa = abs(f**2 + 2 * fder**2 - f * fderder) / ((fder**2 + f**2) ** (3 / 2)) + 1
         return kappa
+
+    def get_function_length(self, difficulty, task, test_index):
+        f = self.provide_function(difficulty, task, test_index)
+        fder = f.diff(self.x)
+
+        if is_cartesian((test_index)):
+            length = sp.sqrt(1 + fder ** 2)
+        else:
+            # length for polar coordinates
+            length = sp.sqrt(fder ** 2 + self.x ** 2)
+        return length
 
     def provide_function_y(self, difficulty, task, x, test_index):
         if(

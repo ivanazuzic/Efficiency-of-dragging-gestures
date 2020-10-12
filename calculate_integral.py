@@ -9,7 +9,7 @@ fp = FunctionProvider()
 x = sp.Symbol("x")
 epsilon = 0.000001
 
-def calculate_curvature_integral():
+def calculate_index_of_difficulty_integral():
     integrals_approx = {}
     for test in range(len(fp.function_array)):
         integrals_approx[test] = {}
@@ -19,6 +19,8 @@ def calculate_curvature_integral():
                 function_id = tasks_num * difficulty + task
                 print("########## Test mode:", test + 1, "; Difficlty:", difficulty + 1, "; Task:", task + 1)
                 kappa = fp.get_function_curvature(difficulty, task, test)
+                length = fp.get_function_length(difficulty, task, test)
+
                 # print("Sympy intergation:", sp.integrate(kappa,x), sp.integrate(kappa, (x, 0, math.pi / 3)), "\n")
                 # because of the complex calculation revolving the curvature
                 # (kappa), we instead calculate its approximation
@@ -27,15 +29,15 @@ def calculate_curvature_integral():
 
                 x0 = 0
                 x1 = 2 * math.pi
+                index_of_difficulty = kappa * length
+                print(index_of_difficulty)
+                index_of_difficulty = sp.lambdify(x, index_of_difficulty, "numpy")
 
-                print(kappa)
-                kappa = sp.lambdify(x, kappa, "numpy")
-
-                integral_approx = calculate_riemann_integral(kappa, x0, x1, 1000)
+                integral_approx = calculate_riemann_integral(index_of_difficulty, x0, x1, 1000)
                 print("Integral: ", integral_approx, "\n")
                 integrals_approx[test][str(function_id)] = str(integral_approx)
 
-    file = open("analysis/curvature_integrals.json", "w")
+    file = open("analysis/index_of_difficulty.json", "w")
     file.write(json.dumps(integrals_approx, sort_keys=True, indent=4))
     file.close()
 
@@ -117,21 +119,13 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
                 x2 = float(coordinate2[0])  # x coordinate of second point
                 y2 = float(coordinate2[1])
 
-                tmp_x1, tmp_y1 = x1, y1
-                tmp_x2, tmp_y2 = x2, y2
-
                 if(is_cartesian(projection) is False):
-                    if(abs(x1 - x2) > 2 * math.pi - 1):
+                    if(abs(x1 - x2) > 2 * math.pi - 2):
                         # what if points are at 2pi - 0 interval (crossing)
                         if(x1 > x2):
                             x1 = x1 - 2 * math.pi
-                            tmp_x1 = x1
                         else:
                             x2 = x2 - 2 * math.pi
-                            tmp_x2 = x2
-
-                    x1, y1 = (y1 * np.cos(x1), y1 * np.sin(x1))
-                    x2, y2 = (y2 * np.cos(x2), y2 * np.sin(x2))
 
                 if(abs(x2 - x1) < epsilon):
                     continue
@@ -145,13 +139,10 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
 
                 f = k * (x - x1) + y1
                 if(is_cartesian(projection) is False):
-                    f = sp.lambdify(x, f, "numpy")
-                    f = f(0) / (sp.sin(x) - (f(1) - f(0)) * sp.cos(x))
+                    # f = sp.lambdify(x, f, "numpy")
+                    # f = f(0) / (sp.sin(x) - (f(1) - f(0)) * sp.cos(x))
+                    f = (y1 + y2) / 2
                     f = 0.5 * f**2
-
-                    # restore cartesian coordinates back to polar
-                    x1, y1 = tmp_x1, tmp_y1
-                    x2, y2 = tmp_x2, tmp_y2
 
                 f = sp.lambdify(x, f, "numpy")
 
@@ -167,8 +158,8 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
 
             # append this integral to the array at result[function_id]
             # turn the float into string so it can be serialized into JSON
-            # print(tasks[task], " result: ", integral, "error:", error_integral)
-            # print("Actual surface", calculate_riemann_integral(real_func, 0, 2 * math.pi, 100)) 
+            print(tasks[task], " result: ", integral, "error:", error_integral)
+            print("Actual surface", calculate_riemann_integral(real_func, 0, 2 * math.pi, 100)) 
 
             result[function_id][projection]["integral"].append(str(integral))
             result[function_id][projection]["error"].append(str(error_integral))
@@ -210,5 +201,5 @@ def calculate_all_user_movement_integrals():
 # uncomment this to calculate integral of all user movements
 # calculate_all_user_movement_integrals()
 
-calculate_user_movement_integral("galebftw", 0)
-# calculate_curvature_integral()
+# calculate_user_movement_integral("galebftw", 0)
+calculate_index_of_difficulty_integral()
