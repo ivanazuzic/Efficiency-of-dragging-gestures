@@ -17,3 +17,24 @@ SCREEN_PPI = SCREEN_XSIZE_PIX / SCREEN_XSIZE_INCH
 FIG_DPI = SCREEN_PPI
 FIG_XSIZE_INCH = SCREEN_XSIZE_INCH * 0.9
 FIG_YSIZE_INCH = SCREEN_YSIZE_INCH
+
+X_RANGE = {
+    "start": 0,
+    "end": 2* math.pi
+}
+
+CARTESIAN_PLOT_LIMITS = {
+    "x": [X_RANGE["start"] - 0.5, X_RANGE["end"] + 0.5],
+    "y": [0, 2.5]
+}
+
+POLAR_PLOT_LIMITS = {
+    "x": [X_RANGE["start"], X_RANGE["end"]],
+    "y": [0, 2.5]
+}
+
+CARTESIAN_UNIT_LENGTH = FIG_XSIZE_INCH / (CARTESIAN_PLOT_LIMITS["x"][1] - CARTESIAN_PLOT_LIMITS["x"][0])
+print("Cartesian Unit len", CARTESIAN_UNIT_LENGTH)
+
+POLAR_UNIT_LENGTH = (FIG_YSIZE_INCH / 2) / (POLAR_PLOT_LIMITS["y"][1] - POLAR_PLOT_LIMITS["y"][0])
+print("Polar Unit len", POLAR_UNIT_LENGTH)

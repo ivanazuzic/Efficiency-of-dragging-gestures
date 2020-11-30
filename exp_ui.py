@@ -10,7 +10,7 @@ import time
 
 from curve_functions import FunctionProvider, is_cartesian
 from backing_up_locally import *
-from display_properties import FIG_DPI, FIG_XSIZE_INCH, FIG_YSIZE_INCH, SCREEN_XSIZE_PIX, SCREEN_YSIZE_PIX
+from display_properties import FIG_DPI, FIG_XSIZE_INCH, FIG_YSIZE_INCH, SCREEN_XSIZE_PIX, SCREEN_YSIZE_PIX, X_RANGE, CARTESIAN_PLOT_LIMITS, POLAR_PLOT_LIMITS
 
 # ~~~~~~~~~
 #===THIS IS COMMENTED BECAUSE THE CONNECTION DATA IS IN AN UNCOMMITTED FILE===
@@ -156,28 +156,25 @@ class ExperimentWindow(tk.Frame):
     def init_graph(self):
         x_range = {}
         graph = None
-        x_range = {
-            # start point and end point on which f(x) is defined
-            "start": 0,
-            "end": 2 * math.pi,
-        }
+        x_range = X_RANGE
         if self.is_plot_cartestian():
             # init cartesian graph
             graph = self.fig.add_subplot(111, position=[0.,0.,1.,1.], aspect="equal")
             # limiting the x axis range
             # but only if coordinates are Cartesian
-            graph.set_xlim([
-                x_range["start"] - (x_range["end"] - x_range["start"]) / 6,
-                x_range["end"] + (x_range["end"] - x_range["start"]) / 6
-            ])
+            graph.set_xlim(
+                CARTESIAN_PLOT_LIMITS["x"]
+            )
+            graph.set_ylim(CARTESIAN_PLOT_LIMITS["y"])
         else:
             # init polar graph
             graph = self.fig.add_subplot(111, projection="polar", position=[0.,0.,1.,1.], aspect="equal")
             # this removes the radius (r)
-            graph.set_yticks([])
-
-        # limiting the y axis range
-        graph.set_ylim([0, 2.5])
+            graph.set_yticks([1])
+            graph.set_xlim(
+                POLAR_PLOT_LIMITS["x"]
+            )
+            graph.set_ylim(POLAR_PLOT_LIMITS["y"])
 
         print("xlim:", graph.get_xlim())
         print("xbound:", graph.get_xbound())

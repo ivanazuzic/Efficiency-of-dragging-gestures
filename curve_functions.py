@@ -55,7 +55,7 @@ class FunctionProvider:
             length = sp.sqrt(1 + fder ** 2)
         else:
             # length for polar coordinates
-            length = sp.sqrt(fder ** 2 + self.x ** 2)
+            length = sp.sqrt(fder ** 2 + f ** 2)
         return length
 
     def provide_function_y(self, difficulty, task, x, test_index):
@@ -110,6 +110,7 @@ class FunctionProvider:
     ##### Polar Coordinates #####
     def function_curve_d1_t5(self):
         f = self.make_sin_rosette(1.8, 0.3, 2)
+        # f = 2 * (self.x ** 0)
         return f
 
     ##### Polar Coordinates #####
