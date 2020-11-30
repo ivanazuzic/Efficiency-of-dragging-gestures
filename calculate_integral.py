@@ -29,7 +29,7 @@ def calculate_index_of_difficulty_integral():
 
                 x0 = 0
                 x1 = 2 * math.pi
-                index_of_difficulty = kappa * length
+                index_of_difficulty = length
                 print(index_of_difficulty)
                 index_of_difficulty = sp.lambdify(x, index_of_difficulty, "numpy")
 
@@ -37,7 +37,7 @@ def calculate_index_of_difficulty_integral():
                 print("Integral: ", integral_approx, "\n")
                 integrals_approx[test][str(function_id)] = str(integral_approx)
 
-    file = open("analysis/index_of_difficulty.json", "w")
+    file = open("analysis/index_of_difficulty-length.json", "w")
     file.write(json.dumps(integrals_approx, sort_keys=True, indent=4))
     file.close()
 
@@ -64,7 +64,6 @@ def calculate_riemann_integral(f, x0, x1, numpoints):
             print(e)
         finally:
             x0 += delta
-            i += 1
     return integral_approx
 
 

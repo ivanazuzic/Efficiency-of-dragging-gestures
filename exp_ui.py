@@ -29,6 +29,13 @@ test 0 and 2 are used. For experiment with index 1, tests 1 and 3 are used.
 0,1 - cartesian tests; 2,3 - polar tests """
 TESTS_IN_EXPERIMENT = [[0, 2], [1, 3]]
 
+# Plot specifications
+
+""" Dots per inch """
+FIG_DPI = 100
+FIG_XSIZE_INCH = 12
+FIX_YSIZE_INCH = 10
+
 class ExperimentWindow(tk.Frame):
     def __init__(
         self,
@@ -70,7 +77,7 @@ class ExperimentWindow(tk.Frame):
         self.window = tk.Toplevel()
         self.window.title("Task window")
 
-        self.fig = Figure(figsize=(12, 9), dpi=100)
+        self.fig = Figure(figsize=(FIG_XSIZE_INCH, FIX_YSIZE_INCH), dpi=FIG_DPI)
         # A tk.DrawingArea.
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
         self.init_graph()
@@ -85,7 +92,7 @@ class ExperimentWindow(tk.Frame):
 
         self.init_plot(self.current_function_index)
 
-        self.canvas.get_tk_widget().grid(row=0, column=0, rowspan=10)
+        self.canvas.get_tk_widget().grid(row=0, column=1, rowspan=10)
 
         self.is_mouse_pressed = False
         # cursor_coord holds the last (ultimate)
@@ -118,7 +125,7 @@ class ExperimentWindow(tk.Frame):
             command=self.next_function,
             state="disabled"
         )
-        self.button_next.grid(row=1, column=1)
+        self.button_next.grid(row=0, column=2)
 
         # this is the "Quit" button
         self.button_quit = tk.Button(
@@ -126,7 +133,7 @@ class ExperimentWindow(tk.Frame):
             text="Quit",
             command=self._quit
         )
-        self.button_quit.grid(row=2, column=1)
+        self.button_quit.grid(row=0, column=0)
 
         self.cur_coord_stringvar = tk.StringVar()
         self.cur_coord_stringvar.set("")
@@ -140,6 +147,8 @@ class ExperimentWindow(tk.Frame):
         width = 1600
         height = 1000
         self.window.geometry('{}x{}+{}+{}'.format(width, height, 10, 10))
+        self.window.grid_columnconfigure(0, weight=1)
+        self.window.grid_columnconfigure(2, weight=1)
 
         # Setting the screen state to be toggleable
         # By default the screen is small
