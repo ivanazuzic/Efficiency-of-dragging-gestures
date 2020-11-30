@@ -10,6 +10,7 @@ import time
 
 from curve_functions import FunctionProvider, is_cartesian
 from backing_up_locally import *
+from display_properties import FIG_DPI, FIG_XSIZE_INCH, FIG_YSIZE_INCH, SCREEN_XSIZE_PIX, SCREEN_YSIZE_PIX
 
 # ~~~~~~~~~
 #===THIS IS COMMENTED BECAUSE THE CONNECTION DATA IS IN AN UNCOMMITTED FILE===
@@ -28,13 +29,6 @@ NUM_OF_FUNCTIONS_PER_DIFF = 2
 test 0 and 2 are used. For experiment with index 1, tests 1 and 3 are used.
 0,1 - cartesian tests; 2,3 - polar tests """
 TESTS_IN_EXPERIMENT = [[0, 2], [1, 3]]
-
-# Plot specifications
-
-""" Dots per inch """
-FIG_DPI = 100
-FIG_XSIZE_INCH = 12
-FIX_YSIZE_INCH = 10
 
 class ExperimentWindow(tk.Frame):
     def __init__(
@@ -77,7 +71,7 @@ class ExperimentWindow(tk.Frame):
         self.window = tk.Toplevel()
         self.window.title("Task window")
 
-        self.fig = Figure(figsize=(FIG_XSIZE_INCH, FIX_YSIZE_INCH), dpi=FIG_DPI)
+        self.fig = Figure(figsize=(FIG_XSIZE_INCH, FIG_YSIZE_INCH), dpi=FIG_DPI)
         # A tk.DrawingArea.
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
         self.init_graph()
@@ -137,22 +131,25 @@ class ExperimentWindow(tk.Frame):
 
         self.cur_coord_stringvar = tk.StringVar()
         self.cur_coord_stringvar.set("")
-        # uncomment this to display current cursor coords, below 'Quit' button
+        # uncomment this to display current cursor coords, below 'Next' button
         # self.cur_coord_label = tk.Label(master=self.window, textvariable=self.cur_coord_stringvar)
         # self.cur_coord_label.grid(row=3, column=1)
 
         # self.window.after(self.SAMPLE_TIMEOUT, self.task)
 
         # Setting the windows size and initial position
-        width = 1600
-        height = 1000
+        width = SCREEN_XSIZE_PIX
+        height = SCREEN_YSIZE_PIX
         self.window.geometry('{}x{}+{}+{}'.format(width, height, 10, 10))
+        # by giving weight to the first and third column we are ensuring the plot (which is in second column)
+        # stays centered and has padding
         self.window.grid_columnconfigure(0, weight=1)
         self.window.grid_columnconfigure(2, weight=1)
+        self.window.grid_anchor("c")
 
         # Setting the screen state to be toggleable
         # By default the screen is small
-        self.screen_state = False
+        self.screen_state = True
         self.window.attributes("-fullscreen", self.screen_state)
         self.window.bind("<Escape>", self.toggle_fullscreen)
 
@@ -166,7 +163,7 @@ class ExperimentWindow(tk.Frame):
         }
         if self.is_plot_cartestian():
             # init cartesian graph
-            graph = self.fig.add_subplot(111)
+            graph = self.fig.add_subplot(111, position=[0.,0.,1.,1.], aspect="equal")
             # limiting the x axis range
             # but only if coordinates are Cartesian
             graph.set_xlim([
@@ -175,12 +172,15 @@ class ExperimentWindow(tk.Frame):
             ])
         else:
             # init polar graph
-            graph = self.fig.add_subplot(111, projection="polar")
+            graph = self.fig.add_subplot(111, projection="polar", position=[0.,0.,1.,1.], aspect="equal")
             # this removes the radius (r)
             graph.set_yticks([])
 
         # limiting the y axis range
         graph.set_ylim([0, 2.5])
+
+        print("xlim:", graph.get_xlim())
+        print("xbound:", graph.get_xbound())
         self.x_range = x_range
         # the following line always produces
         # 1000 equally spread points on the x_range
