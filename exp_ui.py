@@ -170,7 +170,8 @@ class ExperimentWindow(tk.Frame):
             # init polar graph
             graph = self.fig.add_subplot(111, projection="polar", position=[0.,0.,1.,1.], aspect="equal")
             # this removes the radius (r)
-            graph.set_yticks([1])
+            graph.set_yticks([])
+            graph.set_xticks([])
             graph.set_xlim(
                 POLAR_PLOT_LIMITS["x"]
             )
