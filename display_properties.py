@@ -20,7 +20,7 @@ FIG_YSIZE_INCH = SCREEN_YSIZE_INCH
 
 X_RANGE = {
     "start": 0,
-    "end": 2* math.pi
+    "end": 2 * math.pi
 }
 
 CARTESIAN_PLOT_LIMITS = {
@@ -35,6 +35,10 @@ POLAR_PLOT_LIMITS = {
 
 CARTESIAN_UNIT_LENGTH = FIG_XSIZE_INCH / (CARTESIAN_PLOT_LIMITS["x"][1] - CARTESIAN_PLOT_LIMITS["x"][0])
 print("Cartesian Unit len", CARTESIAN_UNIT_LENGTH)
+
+# fix limits of y axis in cartesian system so it takes up the untire screen height
+CARTESIAN_PLOT_LIMITS["y"][1] = 1.25 + FIG_YSIZE_INCH / CARTESIAN_UNIT_LENGTH / 2
+CARTESIAN_PLOT_LIMITS["y"][0] = 1.25 - FIG_YSIZE_INCH / CARTESIAN_UNIT_LENGTH / 2
 
 POLAR_UNIT_LENGTH = (FIG_YSIZE_INCH / 2) / (POLAR_PLOT_LIMITS["y"][1] - POLAR_PLOT_LIMITS["y"][0])
 print("Polar Unit len", POLAR_UNIT_LENGTH)
