@@ -27,27 +27,33 @@ class MainWindow(tk.Frame):
         # and for mode selection 
 
         # Entering the participants name
+        row_index = 0
         name_label = tk.Label(text='Participants name:')
-        name_label.grid(row=0, column=0)
+        name_label.grid(row=row_index, column=0)
         name = tk.StringVar()
         name_entry = tk.Entry(root,textvariable=name, width=30)
-        name_entry.grid(row=0, column=1)
+        name_entry.grid(row=row_index, column=1)
+        row_index += 1
 
         # Entering the participants age
         age_label = tk.Label(text='Participants age:')
-        age_label.grid(row=1, column=0)
+        age_label.grid(row=row_index, column=0)
         age = tk.StringVar()
         age_entry = tk.Entry(root,textvariable=age, width=30)
-        age_entry.grid(row=1, column=1)
+        age_entry.grid(row=row_index, column=1)
+        row_index += 1
 
         # Entering the participants input device
-        AVAILABLE_DEVICES = ["Mouse", "Trackpad", "Graphic tablet"]
+        # Trackpad Option is no longer being tested, so it should be removed
+        # AVAILABLE_DEVICES = ["Mouse", "Trackpad", "Graphic tablet"]
+        AVAILABLE_DEVICES = ["Mouse", "Graphic tablet"]
         device_label = tk.Label(text='Input device:')
-        device_label.grid(row=2, column=0)  
+        device_label.grid(row=row_index, column=0)  
         device = tk.StringVar(root)
         device.set(AVAILABLE_DEVICES[0])
         device_entry = tk.OptionMenu(root, device, *AVAILABLE_DEVICES)
-        device_entry.grid(row=2, column=1)
+        device_entry.grid(row=row_index, column=1)
+        row_index += 1
 
         # # Entering the difficulty
         # DIFFICULTY = ["Easy", "Medium", "Hard"]
@@ -69,29 +75,43 @@ class MainWindow(tk.Frame):
 
         # Choosing the experiment mode
         experiment_mode_label = tk.Label(text='Experiment mode:')
-        experiment_mode_label.grid(row=3, column=0)
+        experiment_mode_label.grid(row=row_index, column=0)
         experiment_mode = tk.IntVar(0)
         experiment_mode.set(0)
         MODE = [0, 1]  # only two modes
         mode_entry = tk.OptionMenu(root, experiment_mode, *MODE)
-        mode_entry.grid(row=3, column=1)
+        mode_entry.grid(row=row_index, column=1)
+        row_index += 1
+
+        # The participant should choose whether he's ambidextrous, left or right handed
+        POSSIBLE_HANDEDNESS = ["Right-handed", "Left-handed", "Ambidextrous"]
+        handedness_label = tk.Label(text="Participant's handedness (dominant hand):")
+        handedness_label.grid(row=row_index, column=0)  
+        handedness = tk.StringVar(root)
+        handedness.set(POSSIBLE_HANDEDNESS[0])
+        handedness_entry = tk.OptionMenu(root, handedness, *POSSIBLE_HANDEDNESS)
+        handedness_entry.grid(row=row_index, column=1)
+        row_index += 1
+
 
         helper_label = tk.Label(text=('-'*60))
-        helper_label.grid(row=4, column=0, columnspan=2)
+        helper_label.grid(row=row_index, column=0, columnspan=2)
+        row_index += 1
 
         # Button that starts the experiment
         b = tk.Button(root, text="Start experiment")
-        b.grid(row=5, column=0, columnspan=2, sticky=tk.W)
+        b.grid(row=row_index, column=0, columnspan=2, sticky=tk.W)
+        row_index += 1
 
         # old version where we had to get the order and difficulty
         # b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), difficulty.get(), order.get(), e))
 
-        b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), experiment_mode.get(), e))
+        b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), handedness.get(), experiment_mode.get(), e))
 
         # Setting the windows size and initial position
-        width = 350
-        height = 200
-        self.parent.geometry('{}x{}+{}+{}'.format(width, height, 10, 10))
+        width = 600
+        height = 250
+        self.parent.geometry('{}x{}+{}+{}'.format(width, height, 100, 100))
 
         # Setting the screen state to be toggleable
         # By default the screen is small 
@@ -118,6 +138,7 @@ class MainWindow(tk.Frame):
         name,
         age,
         device,
+        handedness,
         experiment_mode,
         event
     ):
@@ -135,6 +156,7 @@ class MainWindow(tk.Frame):
             name, 
             age,
             device, 
+            handedness,
             experiment_mode
             # level[difficulty],
             # tuple([int(x) for x in order.replace(' ', '')])

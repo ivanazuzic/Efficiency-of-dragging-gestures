@@ -37,6 +37,7 @@ class ExperimentWindow(tk.Frame):
         participant_name,
         age,
         device,
+        handedness,
         experiment_mode,
         # difficulty,
         # order,
@@ -50,6 +51,7 @@ class ExperimentWindow(tk.Frame):
         self.age = age
         self.device = device
         self.experiment_mode = experiment_mode
+        self.handedness = handedness
         # self.difficulty = difficulty
         # self.function_order = order
 
@@ -307,6 +309,7 @@ class ExperimentWindow(tk.Frame):
             self.sheet.append_row([
                 self.participant_name,
                 float(self.age),
+                self.handedness,
                 self.device,
                 float(self.experiment_mode),
                 float(epoch_time),
