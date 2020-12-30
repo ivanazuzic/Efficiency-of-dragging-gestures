@@ -83,6 +83,23 @@ class MainWindow(tk.Frame):
         mode_entry.grid(row=row_index, column=1)
         row_index += 1
 
+        # The participant should choose if he is an expert graphic tablet user
+        expert_graphic_tablet_user = tk.IntVar(root, value=0)
+        expert_graphic_tablet_user_label = tk.Label(root,text="Expert Graphic Tablet User:")
+        expert_graphic_tablet_user_label.grid(row=row_index, column=0)
+        expert_graphic_tablet_user_checkbox = tk.Checkbutton(root, variable=expert_graphic_tablet_user)
+        expert_graphic_tablet_user_checkbox.grid(row=row_index, column=1)
+        row_index += 1
+
+        # The participant should choose if he is an expert graphic tablet user
+        expert_mouse_user = tk.IntVar(root)
+        expert_mouse_user.set(1)
+        expert_mouse_user_label = tk.Label(root,text="Expert Mouse User:")
+        expert_mouse_user_label.grid(row=row_index, column=0)
+        expert_mouse_user_checkbox = tk.Checkbutton(root, variable=expert_mouse_user)
+        expert_mouse_user_checkbox.grid(row=row_index, column=1)
+        row_index += 1
+
         # The participant should choose whether he's ambidextrous, left or right handed
         POSSIBLE_HANDEDNESS = ["Right-handed", "Left-handed", "Ambidextrous"]
         handedness_label = tk.Label(text="Participant's handedness (dominant hand):")
@@ -92,7 +109,6 @@ class MainWindow(tk.Frame):
         handedness_entry = tk.OptionMenu(root, handedness, *POSSIBLE_HANDEDNESS)
         handedness_entry.grid(row=row_index, column=1)
         row_index += 1
-
 
         helper_label = tk.Label(text=('-'*60))
         helper_label.grid(row=row_index, column=0, columnspan=2)
@@ -106,7 +122,16 @@ class MainWindow(tk.Frame):
         # old version where we had to get the order and difficulty
         # b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), difficulty.get(), order.get(), e))
 
-        b.bind("<Button-1>", lambda e: self.start_experiment(name.get(), age.get(), device.get(), handedness.get(), experiment_mode.get(), e))
+        b.bind("<Button-1>", lambda e: self.start_experiment(
+            name.get(),
+            age.get(),
+            device.get(),
+            handedness.get(),
+            experiment_mode.get(),
+            expert_graphic_tablet_user.get(),
+            expert_mouse_user.get(),
+            e)
+        )
 
         # Setting the windows size and initial position
         width = 600
@@ -140,6 +165,8 @@ class MainWindow(tk.Frame):
         device,
         handedness,
         experiment_mode,
+        expert_graphic_tablet_user,
+        expert_mouse_user,
         event
     ):
 
@@ -147,6 +174,7 @@ class MainWindow(tk.Frame):
         # epoch_time = int(time.time())
         # self.write_participants_data([name, age, device, difficulty, order, epoch_time])
         # level = {"Easy": 1, "Medium": 2, "Hard": 3}
+        print(expert_graphic_tablet_user, expert_mouse_user)
 
         if name != '':
             create_folder(name, experiment_mode, device)
@@ -157,7 +185,9 @@ class MainWindow(tk.Frame):
             age,
             device, 
             handedness,
-            experiment_mode
+            experiment_mode,
+            expert_graphic_tablet_user,
+            expert_mouse_user,
             # level[difficulty],
             # tuple([int(x) for x in order.replace(' ', '')])
         )

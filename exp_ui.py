@@ -39,6 +39,8 @@ class ExperimentWindow(tk.Frame):
         device,
         handedness,
         experiment_mode,
+        expert_graphic_tablet_user,
+        expert_mouse_user,
         # difficulty,
         # order,
         *args,
@@ -52,6 +54,8 @@ class ExperimentWindow(tk.Frame):
         self.device = device
         self.experiment_mode = experiment_mode
         self.handedness = handedness
+        self.expert_graphic_tablet_user = expert_graphic_tablet_user
+        self.expert_mouse_user = expert_mouse_user
         # self.difficulty = difficulty
         # self.function_order = order
 
@@ -318,6 +322,8 @@ class ExperimentWindow(tk.Frame):
                 "Cartesian" if self.is_plot_cartestian() else "Polar",
                 float(self.drawing_time),
                 float(error),
+                float(self.expert_mouse_user),
+                float(self.expert_graphic_tablet_user)
             ])
         # ~~~~~~~~~
 
