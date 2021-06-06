@@ -4,7 +4,7 @@ import json
 import sympy as sp
 import numpy as np
 import math
-from display_properties import POLAR_UNIT_LENGTH, CARTESIAN_UNIT_LENGTH, LINEWIDTH_IN_INCH
+import display_properties
 
 fp = FunctionProvider()
 x = sp.Symbol("x")
@@ -31,20 +31,26 @@ def calculate_index_of_difficulty_integral():
                 x0 = 0
                 x1 = 2 * math.pi
                 if(is_cartesian(test)):
-                    length = length * CARTESIAN_UNIT_LENGTH
+                    length = length * display_properties.CARTESIAN_UNIT_LENGTH_IN_INCH
                 else:
-                    length = length * POLAR_UNIT_LENGTH
+                    length = length * display_properties.POLAR_UNIT_LENGTH_IN_INCH
 
-                index_of_difficulty = sp.log((kappa + length) / LINEWIDTH_IN_INCH + 1, 2)
+                # index_of_difficulty = sp.log((kappa + length) / display_properties.LINEWIDTH_IN_INCH + 1, 2)
+                # index_of_difficulty = sp.log((length * kappa) / display_properties.LINEWIDTH_IN_INCH + 1, 2)
+                # index_of_difficulty = sp.log((length + kappa) + 1, 2)
+                # index_of_difficulty = kappa
+                index_of_difficulty = length
                 print(index_of_difficulty)
                 index_of_difficulty = sp.lambdify(x, index_of_difficulty, "numpy")
 
-                integral_approx = calculate_riemann_integral(index_of_difficulty, x0, x1, 1000)
+                integral_approx = calculate_riemann_integral(index_of_difficulty, x0, x1, 10000)
 
                 print("Integral: ", integral_approx, "\n")
                 integrals_approx[test][str(function_id)] = str(integral_approx)
 
-    file = open("analysis/index_of_difficulty-log(kappa+length).json", "w")
+    # file = open("analysis/index_of_difficulty-log(kappa+length).json", "w")
+    # file = open("analysis/index_of_difficulty-kappa.json", "w")
+    file = open("analysis/index_of_difficulty-length.json", "w")
     file.write(json.dumps(integrals_approx, sort_keys=True, indent=4))
     file.close()
 

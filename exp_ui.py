@@ -10,7 +10,7 @@ import time
 
 from curve_functions import FunctionProvider, is_cartesian
 from backing_up_locally import *
-from display_properties import FIG_DPI, FIG_XSIZE_INCH, FIG_YSIZE_INCH, SCREEN_XSIZE_PIX, SCREEN_YSIZE_PIX, X_RANGE, CARTESIAN_PLOT_LIMITS, POLAR_PLOT_LIMITS
+import display_properties
 
 # ~~~~~~~~~
 #===THIS IS COMMENTED BECAUSE THE CONNECTION DATA IS IN AN UNCOMMITTED FILE===
@@ -77,7 +77,7 @@ class ExperimentWindow(tk.Frame):
         self.window = tk.Toplevel()
         self.window.title("Task window")
 
-        self.fig = Figure(figsize=(FIG_XSIZE_INCH, FIG_YSIZE_INCH), dpi=FIG_DPI)
+        self.fig = Figure(figsize=(display_properties.FIG_XSIZE_INCH, display_properties.FIG_YSIZE_INCH), dpi=display_properties.FIG_DPI)
         # A tk.DrawingArea.
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
         self.init_graph()
@@ -144,8 +144,8 @@ class ExperimentWindow(tk.Frame):
         # self.window.after(self.SAMPLE_TIMEOUT, self.task)
 
         # Setting the windows size and initial position
-        width = SCREEN_XSIZE_PIX
-        height = SCREEN_YSIZE_PIX
+        width = display_properties.SCREEN_XSIZE_PIX
+        height = display_properties.SCREEN_YSIZE_PIX
         self.window.geometry('{}x{}+{}+{}'.format(width, height, 10, 10))
         # by giving weight to the first and third column we are ensuring the plot (which is in second column)
         # stays centered and has padding
@@ -162,16 +162,16 @@ class ExperimentWindow(tk.Frame):
     def init_graph(self):
         x_range = {}
         graph = None
-        x_range = X_RANGE
+        x_range = display_properties.X_RANGE
         if self.is_plot_cartestian():
             # init cartesian graph
             graph = self.fig.add_subplot(111, position=[0.,0.,1.,1.], aspect="equal")
             # limiting the x axis range
             # but only if coordinates are Cartesian
             graph.set_xlim(
-                CARTESIAN_PLOT_LIMITS["x"]
+                display_properties.CARTESIAN_PLOT_LIMITS["x"]
             )
-            graph.set_ylim(CARTESIAN_PLOT_LIMITS["y"])
+            graph.set_ylim(display_properties.CARTESIAN_PLOT_LIMITS["y"])
         else:
             # init polar graph
             graph = self.fig.add_subplot(111, projection="polar", position=[0.,0.,1.,1.], aspect="equal")
@@ -179,9 +179,9 @@ class ExperimentWindow(tk.Frame):
             graph.set_yticks([])
             graph.set_xticks([])
             graph.set_xlim(
-                POLAR_PLOT_LIMITS["x"]
+                display_properties.POLAR_PLOT_LIMITS["x"]
             )
-            graph.set_ylim(POLAR_PLOT_LIMITS["y"])
+            graph.set_ylim(display_properties.POLAR_PLOT_LIMITS["y"])
 
         print("xlim:", graph.get_xlim())
         print("xbound:", graph.get_xbound())
@@ -270,7 +270,7 @@ class ExperimentWindow(tk.Frame):
         self.time_end = None
         projection = "Cartesian" if self.is_plot_cartestian() else "Polar"
 
-        self.graph.plot(self.t, self.y)  # plot the generated t and y      
+        self.graph.plot(self.t, self.y, linewidth=display_properties.LINEWIDTH_IN_POINTS)  # plot the generated t and y      
         self.fig.savefig("analysis/figures/curves/" + projection + "_funcId-" + str(self.function_order[plot_index]) + "_experimentMode-" + str(self.experiment_mode) )      
         self.canvas.draw()
 
