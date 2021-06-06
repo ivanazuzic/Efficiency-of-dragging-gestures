@@ -41,10 +41,10 @@ class FunctionProvider:
         fderder = fder.diff(self.x)
 
         if is_cartesian((test_index)):
-            kappa = sp.sqrt((fderder)**2) / ((1 + (fder)**2)**(3 / 2)) + 1
+            kappa = sp.sqrt((fderder)**2) / ((1 + (fder)**2)**(3 / 2))
         else:
             # kappa for polar coordinates
-            kappa = abs(f**2 + 2 * fder**2 - f * fderder) / ((fder**2 + f**2) ** (3 / 2)) + 1
+            kappa = abs(f**2 + 2 * fder**2 - f * fderder) / ((fder**2 + f**2) ** (3 / 2))
         return kappa
 
     def get_function_length(self, difficulty, task, test_index):

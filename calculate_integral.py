@@ -4,7 +4,7 @@ import json
 import sympy as sp
 import numpy as np
 import math
-from display_properties import POLAR_UNIT_LENGTH, CARTESIAN_UNIT_LENGTH
+from display_properties import POLAR_UNIT_LENGTH, CARTESIAN_UNIT_LENGTH, LINEWIDTH_IN_INCH
 
 fp = FunctionProvider()
 x = sp.Symbol("x")
@@ -30,20 +30,21 @@ def calculate_index_of_difficulty_integral():
 
                 x0 = 0
                 x1 = 2 * math.pi
-                index_of_difficulty = kappa * length
+                if(is_cartesian(test)):
+                    length = length * CARTESIAN_UNIT_LENGTH
+                else:
+                    length = length * POLAR_UNIT_LENGTH
+
+                index_of_difficulty = sp.log((kappa + length) / LINEWIDTH_IN_INCH + 1, 2)
                 print(index_of_difficulty)
                 index_of_difficulty = sp.lambdify(x, index_of_difficulty, "numpy")
 
                 integral_approx = calculate_riemann_integral(index_of_difficulty, x0, x1, 1000)
-                if(is_cartesian(test)):
-                    integral_approx = integral_approx * CARTESIAN_UNIT_LENGTH
-                else:
-                    integral_approx = integral_approx * POLAR_UNIT_LENGTH
 
                 print("Integral: ", integral_approx, "\n")
                 integrals_approx[test][str(function_id)] = str(integral_approx)
 
-    file = open("analysis/index_of_difficulty-kappa*length.json", "w")
+    file = open("analysis/index_of_difficulty-log(kappa+length).json", "w")
     file.write(json.dumps(integrals_approx, sort_keys=True, indent=4))
     file.close()
 

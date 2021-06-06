@@ -33,12 +33,17 @@ POLAR_PLOT_LIMITS = {
     "y": [0, 2.5]
 }
 
+""""Unit length in inches"""
 CARTESIAN_UNIT_LENGTH = FIG_XSIZE_INCH / (CARTESIAN_PLOT_LIMITS["x"][1] - CARTESIAN_PLOT_LIMITS["x"][0])
-print("Cartesian Unit len", CARTESIAN_UNIT_LENGTH)
+print("Cartesian Unit len (inches)", CARTESIAN_UNIT_LENGTH)
 
 # fix limits of y axis in cartesian system so it takes up the untire screen height
 CARTESIAN_PLOT_LIMITS["y"][1] = 1.25 + FIG_YSIZE_INCH / CARTESIAN_UNIT_LENGTH / 2
 CARTESIAN_PLOT_LIMITS["y"][0] = 1.25 - FIG_YSIZE_INCH / CARTESIAN_UNIT_LENGTH / 2
 
 POLAR_UNIT_LENGTH = (FIG_YSIZE_INCH / 2) / (POLAR_PLOT_LIMITS["y"][1] - POLAR_PLOT_LIMITS["y"][0])
-print("Polar Unit len", POLAR_UNIT_LENGTH)
+print("Polar Unit len (inches)", POLAR_UNIT_LENGTH)
+
+LINEWIDTH_IN_PIX = 2.6666666
+LINEWIDTH_IN_INCH = LINEWIDTH_IN_PIX / SCREEN_PPI
+print("Linewidth in inches:", LINEWIDTH_IN_INCH)

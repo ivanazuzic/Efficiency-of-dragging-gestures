@@ -268,8 +268,10 @@ class ExperimentWindow(tk.Frame):
         # it took the user to follow the function trajectory
         self.time_start = None
         self.time_end = None
+        projection = "Cartesian" if self.is_plot_cartestian() else "Polar"
 
-        self.graph.plot(self.t, self.y)  # plot the generated t and y            
+        self.graph.plot(self.t, self.y)  # plot the generated t and y      
+        self.fig.savefig("analysis/figures/curves/" + projection + "_funcId-" + str(self.function_order[plot_index]) + "_experimentMode-" + str(self.experiment_mode) )      
         self.canvas.draw()
 
         # store the background of the current canvas
