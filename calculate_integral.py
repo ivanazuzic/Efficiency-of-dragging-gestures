@@ -35,11 +35,11 @@ def calculate_index_of_difficulty_integral():
                 else:
                     length = length * display_properties.POLAR_UNIT_LENGTH_IN_INCH
 
-                # index_of_difficulty = sp.log((kappa + length) / display_properties.LINEWIDTH_IN_INCH + 1, 2)
-                # index_of_difficulty = sp.log((length * kappa) / display_properties.LINEWIDTH_IN_INCH + 1, 2)
                 # index_of_difficulty = sp.log((length + kappa) + 1, 2)
                 # index_of_difficulty = kappa
-                index_of_difficulty = length
+                # index_of_difficulty = length
+                # index_of_difficulty = sp.log(kappa * display_properties.LINEWIDTH_IN_INCH / length + 1, 2)
+                # index_of_difficulty = length / display_properties.LINEWIDTH_IN_INCH + kappa
                 print(index_of_difficulty)
                 index_of_difficulty = sp.lambdify(x, index_of_difficulty, "numpy")
 
@@ -50,7 +50,9 @@ def calculate_index_of_difficulty_integral():
 
     # file = open("analysis/index_of_difficulty-log(kappa+length).json", "w")
     # file = open("analysis/index_of_difficulty-kappa.json", "w")
-    file = open("analysis/index_of_difficulty-length.json", "w")
+    # file = open("analysis/index_of_difficulty-length.json", "w")
+    # file = open("analysis/index_of_difficulty-log(kappa*w:length+1).json", "w")
+    # file = open("analysis/index_of_difficulty-length:w+kappa.json", "w")
     file.write(json.dumps(integrals_approx, sort_keys=True, indent=4))
     file.close()
 
@@ -89,6 +91,8 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
     )
 
     result = {}
+
+    all_errors = []
     try:
         # get all tasks our user performed
         tasks = sorted(os.listdir(foldername))
@@ -97,7 +101,7 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
             # this dictionary's keys are function_id's
             function_id = (tasks[task][3])
             result[function_id] = {}
-        
+
         for task in range(len(tasks)):
             # add projection to dictionary
             projection = int(tasks[task][10])
@@ -111,17 +115,19 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
             # for each task, get all the coordinates our user drew
             data = open(foldername + "/" + tasks[task], "r")
             coordinates = data.readlines()
-            print(tasks[task], " ---> is being processed, coordinate number:", len(coordinates))
+            data.close()
+            # print(tasks[task], " ---> is being processed, coordinate number:", len(coordinates))
 
             integral = 0
             # at each segment, subtract surfaces of the real function and user movement
             error_integral = 0
-    
+
             difficulty = int(int(function_id) / 2)
             test = int(function_id) % 2
             real_func = fp.provide_function(difficulty, test, projection)
-            real_func = 0.5 * real_func ** 2
+            # real_func = 0.5 * real_func ** 2
             real_func = sp.lambdify(x, real_func)
+
 
             for i in range(1, len(coordinates)):
                 coordinate1 = coordinates[i - 1].split()
@@ -130,57 +136,64 @@ def calculate_user_movement_integral(user, experiment_mode=0, device="Mouse"):
                 y1 = float(coordinate1[1])
                 x2 = float(coordinate2[0])  # x coordinate of second point
                 y2 = float(coordinate2[1])
+                
+                real_y1 = real_func(x1)
+                real_y2 = real_func(x2)
+                all_errors.append(y1-real_y1)
+                all_errors.append(y2-real_y2)
+                
+                # if(is_cartesian(projection) is False):
+                #     if(abs(x1 - x2) > 2 * math.pi - 2):
+                #         # what if points are at 2pi - 0 interval (crossing)
+                #         if(x1 > x2):
+                #             x1 = x1 - 2 * math.pi
+                #         else:
+                #             x2 = x2 - 2 * math.pi
 
-                if(is_cartesian(projection) is False):
-                    if(abs(x1 - x2) > 2 * math.pi - 2):
-                        # what if points are at 2pi - 0 interval (crossing)
-                        if(x1 > x2):
-                            x1 = x1 - 2 * math.pi
-                        else:
-                            x2 = x2 - 2 * math.pi
-
-                if(abs(x2 - x1) < epsilon):
-                    continue
+                # if(abs(x2 - x1) < epsilon):
+                #     continue
 
                 # get the equation of the line on which point1 and point2 lay
-                k = 0
-                try:
-                    k = (y2 - y1) / (x2 - x1)
-                except:
-                    continue
+                # k = 0
+                # try:
+                #     k = (y2 - y1) / (x2 - x1)
+                # except:
+                #     continue
 
-                f = k * (x - x1) + y1
-                if(is_cartesian(projection) is False):
-                    # f = sp.lambdify(x, f, "numpy")
-                    # f = f(0) / (sp.sin(x) - (f(1) - f(0)) * sp.cos(x))
-                    f = (y1 + y2) / 2
-                    f = 0.5 * f**2
+                # f = k * (x - x1) + y1
+                # if(is_cartesian(projection) is False):
+                #     # f = sp.lambdify(x, f, "numpy")
+                #     # f = f(0) / (sp.sin(x) - (f(1) - f(0)) * sp.cos(x))
+                #     f = (y1 + y2) / 2
+                #     f = 0.5 * f**2
 
-                f = sp.lambdify(x, f, "numpy")
+                # f = sp.lambdify(x, f, "numpy")
 
-                # calculate integral of user plotted line
-                tmp = calculate_riemann_integral(f, x1, x2, 100)
-                # calculate integral of the real function at the same segment
-                tmp2 = calculate_riemann_integral(real_func, x1, x2, 100)
-                error_integral += abs(tmp - tmp2)
+                # # calculate integral of user plotted line
+                # tmp = calculate_riemann_integral(f, x1, x2, 100)
+                # # calculate integral of the real function at the same segment
+                # tmp2 = calculate_riemann_integral(real_func, x1, x2, 100)
+                # error_integral += abs(tmp - tmp2)
 
                 # if(tmp > 1):
                 #     print(i, ": Integral: ", tmp, ' :: (', tmp_x1, ',', tmp_y1, ',   ', tmp_x2,',', tmp_y2, ")")
-                integral += tmp
+                # integral += tmp
 
             # append this integral to the array at result[function_id]
             # turn the float into string so it can be serialized into JSON
-            print(tasks[task], " result: ", integral, "error:", error_integral)
-            print("Actual surface", calculate_riemann_integral(real_func, 0, 2 * math.pi, 100)) 
+            # print(tasks[task], " result: ", integral, "error:", error_integral)
+            # print("Actual surface", calculate_riemann_integral(real_func, 0, 2 * math.pi, 100))
 
-            result[function_id][projection]["integral"].append(str(integral))
-            result[function_id][projection]["error"].append(str(error_integral))
-            data.close()
+            # result[function_id][projection]["integral"].append(str(integral))
+            # result[function_id][projection]["error"].append(str(error_integral))
 
     except Exception as e:
         print(e)
         raise
 
+
+    print(np.max(all_errors))
+    result['max'] = np.max(all_errors)
     return result
 
 
@@ -190,6 +203,8 @@ def calculate_all_user_movement_integrals():
     file = open("analysis/movement_integrals.json", "w")
 
     results_arr = {}
+
+    all_errors = []
 
     for test in experiment_mode:
         # for each test
@@ -204,14 +219,17 @@ def calculate_all_user_movement_integrals():
                 # get all devices
                 # calculate the user's movement integral on this device.
                 result = calculate_user_movement_integral(user, test, device)
+                all_errors.append(result["max"])
                 results_arr[test][user][device] = result
 
     file.write(json.dumps(results_arr, sort_keys=True, indent=4))
     file.close()
+    all_errors = sorted(all_errors, reverse=True)
+    print("max errors", all_errors[:10])
 
 
 # uncomment this to calculate integral of all user movements
-# calculate_all_user_movement_integrals()
+calculate_all_user_movement_integrals()
 
 # calculate_user_movement_integral("galebftw", 0)
-calculate_index_of_difficulty_integral()
+# calculate_index_of_difficulty_integral()
