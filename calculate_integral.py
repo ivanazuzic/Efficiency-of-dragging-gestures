@@ -30,20 +30,32 @@ def calculate_index_of_difficulty_integral():
 
                 x0 = 0
                 x1 = 2 * math.pi
+                # alpha = maximum error the user was allowed (maximum dist between drawn y and real y)
+                alpha = 1 # 0.9678520380625855
+                N = 10000
+
                 if(is_cartesian(test)):
                     length = length * display_properties.CARTESIAN_UNIT_LENGTH_IN_INCH
+                    alpha *= display_properties.CARTESIAN_UNIT_LENGTH_IN_INCH
                 else:
                     length = length * display_properties.POLAR_UNIT_LENGTH_IN_INCH
+                    alpha *= display_properties.POLAR_UNIT_LENGTH_IN_INCH
+
+                length = sp.lambdify(x, length, "numpy")
+                length = calculate_riemann_integral(length, x0, x1, N)
+
+                kappa = sp.lambdify(x, kappa, "numpy")
+                kappa = calculate_riemann_integral(kappa, x0, x1, N)
 
                 # index_of_difficulty = sp.log((length + kappa) + 1, 2)
                 # index_of_difficulty = kappa
                 # index_of_difficulty = length
                 # index_of_difficulty = sp.log(kappa * display_properties.LINEWIDTH_IN_INCH / length + 1, 2)
                 # index_of_difficulty = length / display_properties.LINEWIDTH_IN_INCH + kappa
+                index_of_difficulty = np.log2(length / alpha + kappa + 1)
+                # index_of_difficulty = alpha  # alpha is 'w'
                 print(index_of_difficulty)
-                index_of_difficulty = sp.lambdify(x, index_of_difficulty, "numpy")
-
-                integral_approx = calculate_riemann_integral(index_of_difficulty, x0, x1, 10000)
+                integral_approx = index_of_difficulty
 
                 print("Integral: ", integral_approx, "\n")
                 integrals_approx[test][str(function_id)] = str(integral_approx)
@@ -53,6 +65,8 @@ def calculate_index_of_difficulty_integral():
     # file = open("analysis/index_of_difficulty-length.json", "w")
     # file = open("analysis/index_of_difficulty-log(kappa*w:length+1).json", "w")
     # file = open("analysis/index_of_difficulty-length:w+kappa.json", "w")
+    file = open("analysis/index_of_difficulty-log(length:alpha+kappa+1).json", "w")
+    # file = open("analysis/index_of_difficulty-w.json", "w")
     file.write(json.dumps(integrals_approx, sort_keys=True, indent=4))
     file.close()
 
@@ -229,7 +243,9 @@ def calculate_all_user_movement_integrals():
 
 
 # uncomment this to calculate integral of all user movements
-calculate_all_user_movement_integrals()
+# calculate_all_user_movement_integrals()
 
 # calculate_user_movement_integral("galebftw", 0)
-# calculate_index_of_difficulty_integral()
+calculate_index_of_difficulty_integral()
+
+#1.9836813461621188, 1.4294538125712348, 1.0630777427721778, 0.9678520380625855, 0.824185782388446, 0.788284265135631, 0.7865531957073231, 0.7783081287682021, 0.7459006389300387, 0.7440944953583698]
