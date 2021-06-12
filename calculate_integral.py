@@ -5,10 +5,20 @@ import sympy as sp
 import numpy as np
 import math
 import display_properties
+import pandas as pd
 
 fp = FunctionProvider()
 x = sp.Symbol("x")
 epsilon = 0.000001
+PROJECTIONS = ['Cartesian', 'Polar']
+FUNC_IDS = [0, 1, 2, 3, 4, 5]
+DEVICES = ['Mouse', 'Graphic tablet']
+TEST_MODES = [0, 1]
+
+
+x0 = 0
+x1 = 2 * math.pi
+N = 10000
 
 def calculate_index_of_difficulty_integral():
     integrals_approx = {}
@@ -28,11 +38,8 @@ def calculate_index_of_difficulty_integral():
                 # by summing up y values for each x0 in such a way that
                 # the distance between two x0 points is infinitely small
 
-                x0 = 0
-                x1 = 2 * math.pi
                 # alpha = maximum error the user was allowed (maximum dist between drawn y and real y)
                 alpha = 1 # 0.9678520380625855
-                N = 10000
 
                 if(is_cartesian(test)):
                     length = length * display_properties.CARTESIAN_UNIT_LENGTH_IN_INCH
@@ -242,10 +249,121 @@ def calculate_all_user_movement_integrals():
     print("max errors", all_errors[:10])
 
 
+def calculate_throughput():
+    df = pd.read_csv('analysis/logs.csv')
+    sortedParticipants = sorted(list(set(df['Participant name'])))
+    lengthIoDsFile = open('analysis/index_of_difficulty-' + 'length' +'.json')
+    lengthIoDs = json.load(lengthIoDsFile)
+    lengthIoDsFile.close()
+    kappaIoDsFile = open('analysis/index_of_difficulty-' + 'kappa' +'.json')
+    kappaIoDs = json.load(kappaIoDsFile)
+    kappaIoDsFile.close()
+
+    separator = ";"
+    ## NOTE::: look in calculate_integrals.y
+    # this throughput calculation is not exactly correct :)
+    for i in range(len(sortedParticipants)):
+        participant = sortedParticipants[i]
+        # print(participant, end='')
+        # this will have two values; one for each device
+        TPsForThisParticipant = {}
+        
+        for device in DEVICES:
+            # the average throughput for this participant and this device
+            # each user produces two throughputs: one for each device
+            TPsForThisDevice = []
+            for experimentMode in TEST_MODES:
+                filename = "Results_backup%s/%s/%s" %(experimentMode, participant, device)
+                files = os.listdir(filename)
+                for file in files:
+                    funcId = int(file[3])
+                    projtmp = file[10]
+                    projection = "Cartesian"
+                    if(projtmp in ["2", "3"]):
+                        projection = "Polar"
+                    # we are searching for an entry in the logs which can tell us
+                    # the average MT for user
+                    # and the st dev of error rate for user.
+                    # from the stdev of error rate, we will caluclate effective width of target (W_e)
+                    # and from that we'll get effective index of difficulty - ID_e
+                    # when we divide ID_e by the MT of the user, we get the user's throughput for a single curve
+                    # and then we find the mean of all throughputs for this user, which we
+                    # then use for t-test to compare the two pointing devices
+                        
+                    # filter out by projection, Cartesian or Polar
+                    participantMovement = df[df['Function projection'] == projection]
+                    # filter out by function ID
+                    participantMovement = participantMovement[participantMovement['Function ID'] == funcId]
+                    # filter out by test (experiment mode)
+                    participantMovement = participantMovement[participantMovement['Test mode'] == experimentMode]
+                    participantMovement = participantMovement[participantMovement['Participant name'] == participant]
+                    # filter out by device
+                    participantMovement = participantMovement[participantMovement['Device'] == device]
+                    f = open(filename + "/" + file)
+                    
+                    # find the stdev of the error by dividing the sum of errors with the square root of
+                    # the number of points (this is the stdev formula)
+                    pointsDrawn = [pointDrawn.replace('\n', '') for pointDrawn in f.readlines()]
+                    f.close()
+                    numOfPointsDrawn = len(pointsDrawn)
+
+                    test = int(projtmp)        
+                    difficulty = int(int(funcId) / 2)
+                    task = int(funcId) % 2
+                    real_func = fp.provide_function(difficulty, task, test)
+                    real_func = sp.lambdify(x, real_func)
+
+                    # ALL of the error the user had made on this specific curve
+                    allErrorVals = []
+
+                    for pointDrawn in pointsDrawn:
+                        x_coord = float(pointDrawn.split()[0])
+                        y_coord = float(pointDrawn.split()[1])
+                        real_y = real_func(x_coord)
+
+                        y_diff = abs(y_coord - real_y)
+                        
+                        if(projtmp in ["2", "3"]):
+                            # polar projection, erroval should be multiplied with the polar unit length
+                            # so that we get effective width in inches
+                            y_diff *= display_properties.POLAR_UNIT_LENGTH_IN_INCH
+                        else:
+                            y_diff *= display_properties.CARTESIAN_UNIT_LENGTH_IN_INCH
+
+                        allErrorVals.append(y_diff)
+                    # print(np.mean(allErrorVals), np.std(allErrorVals))
+                    errorVal = np.std(allErrorVals)
+                    
+                    # this is from the effective target width (Fitts law), a true-tried-tested formula
+                    W_e = 4.133 * errorVal
+                    
+                    # calculate effective ID_e for this W_e
+                    kappa = float(kappaIoDs[str(test)][str(funcId)])
+                    length = float(lengthIoDs[str(test)][str(funcId)]) 
+
+                    Id_e = np.log2(length / W_e + kappa + 1)
+                    
+                    # movement time
+                    MT = np.mean(participantMovement["Drawing time"].values)
+                    
+                    # throughput for this curve and this specific user
+                    TP = Id_e / MT
+                    TPsForThisDevice.append(TP)
+                    # print(kappa, length,  W_e, MT, TP, file)
+                    
+                    # print(participant, projection, "(%s)" %projtmp, experimentMode, funcId, device, errorVal)
+            # this is where the loop for each device ends --> we have to calculate
+            # the avg throughput for this participant and this device
+            TPsForThisParticipant[device] = np.mean(TPsForThisDevice)
+        print(participant, TPsForThisParticipant["Mouse"], TPsForThisParticipant["Graphic tablet"], sep=separator)
+
+
 # uncomment this to calculate integral of all user movements
 # calculate_all_user_movement_integrals()
 
 # calculate_user_movement_integral("galebftw", 0)
-calculate_index_of_difficulty_integral()
+# calculate_index_of_difficulty_integral()
+
+calculate_throughput()
 
 #1.9836813461621188, 1.4294538125712348, 1.0630777427721778, 0.9678520380625855, 0.824185782388446, 0.788284265135631, 0.7865531957073231, 0.7783081287682021, 0.7459006389300387, 0.7440944953583698]
