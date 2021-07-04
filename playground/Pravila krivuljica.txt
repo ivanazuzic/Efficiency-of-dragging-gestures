@@ -1,5 +1,0 @@
-Pravila:
-Ime + Prezime ide u textbox (Paziti da nisu dva ista imena)
-Mora se navesti godine
-Ne smije se mišem klikati i drag and droppati izvan plota
-
