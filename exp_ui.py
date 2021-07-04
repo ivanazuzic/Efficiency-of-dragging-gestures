@@ -8,9 +8,9 @@ import random, math
 import numpy as np
 import time
 
-from curve_functions import FunctionProvider, is_cartesian
+from analysis.curve_functions import FunctionProvider, is_cartesian
 from backing_up_locally import *
-import display_properties
+from analysis import display_properties
 
 # ~~~~~~~~~
 #===THIS IS COMMENTED BECAUSE THE CONNECTION DATA IS IN AN UNCOMMITTED FILE===

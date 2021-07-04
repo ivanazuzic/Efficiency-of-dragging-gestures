@@ -17,7 +17,7 @@ TEST_MODES = [0, 1]
 
 
 x0 = 0
-x1 = 2 * math.pi
+x1 = 2  * math.pi
 N = 10000
 
 def calculate_index_of_difficulty_integral():
@@ -48,6 +48,7 @@ def calculate_index_of_difficulty_integral():
                     length = length * display_properties.POLAR_UNIT_LENGTH_IN_INCH
                     alpha *= display_properties.POLAR_UNIT_LENGTH_IN_INCH
 
+                # alpha = display_properties.LINEWIDTH_IN_INCH
                 length = sp.lambdify(x, length, "numpy")
                 length = calculate_riemann_integral(length, x0, x1, N)
 
@@ -59,7 +60,9 @@ def calculate_index_of_difficulty_integral():
                 # index_of_difficulty = length
                 # index_of_difficulty = sp.log(kappa * display_properties.LINEWIDTH_IN_INCH / length + 1, 2)
                 # index_of_difficulty = length / display_properties.LINEWIDTH_IN_INCH + kappa
-                index_of_difficulty = np.log2(length / alpha + kappa + 1)
+                # index_of_difficulty = np.log2(length / alpha + kappa + 1)
+                index_of_difficulty = length / alpha + kappa
+                # index_of_difficulty = length / alpha
                 # index_of_difficulty = alpha  # alpha is 'w'
                 print(index_of_difficulty)
                 integral_approx = index_of_difficulty
@@ -72,7 +75,9 @@ def calculate_index_of_difficulty_integral():
     # file = open("analysis/index_of_difficulty-length.json", "w")
     # file = open("analysis/index_of_difficulty-log(kappa*w:length+1).json", "w")
     # file = open("analysis/index_of_difficulty-length:w+kappa.json", "w")
-    file = open("analysis/index_of_difficulty-log(length:alpha+kappa+1).json", "w")
+    # file = open("analysis/index_of_difficulty-log(length:alpha+kappa+1).json", "w")
+    file = open("analysis/index_of_difficulty-length:alpha+kappa.json", "w")
+    # file = open("analysis/index_of_difficulty-length:alpha.json", "w")
     # file = open("analysis/index_of_difficulty-w.json", "w")
     file.write(json.dumps(integrals_approx, sort_keys=True, indent=4))
     file.close()
@@ -362,8 +367,8 @@ def calculate_throughput():
 # calculate_all_user_movement_integrals()
 
 # calculate_user_movement_integral("galebftw", 0)
-# calculate_index_of_difficulty_integral()
+calculate_index_of_difficulty_integral()
 
-calculate_throughput()
+# calculate_throughput()
 
 #1.9836813461621188, 1.4294538125712348, 1.0630777427721778, 0.9678520380625855, 0.824185782388446, 0.788284265135631, 0.7865531957073231, 0.7783081287682021, 0.7459006389300387, 0.7440944953583698]
